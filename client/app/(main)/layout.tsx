@@ -1,6 +1,7 @@
+import React from "react";
 import type { Metadata } from "next";
 import { Fredoka, Poppins } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import MainLayout from "@/components/layout/MainLayout";
 
 const fontFredoka = Fredoka({
