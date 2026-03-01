@@ -29,7 +29,7 @@ export default function Header() {
             </li>
             <li>
               <button className="font-medium font-poppins text-[16px] leading-[24px] text-[#009de0] bg-[#001924] hover:bg-[#002636] min-h-[46px] px-[16px] rounded-[8px] cursor-pointer">
-                Sign up more
+                Sign up 
               </button>
             </li>
           </ul>

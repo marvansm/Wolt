@@ -1,4 +1,4 @@
-import { LocateFixed, MapPin } from "lucide-react";
+import { ChevronRight, LocateFixed, MapPin } from "lucide-react";
 
 export default function BannerSection() {
   return (
@@ -22,7 +22,8 @@ export default function BannerSection() {
 
           "
         >
-          New users get 14 days of 0₼ delivery
+          New users get 14 days of 0₼ delivery{" "}
+          <ChevronRight size={16} strokeWidth={2} />
         </button>
         <div>
           <h2 className="uppercase font-bold font-fredoka leading-[1] min-h-[88px] text-[88px]  text-center text-white">
@@ -59,7 +60,7 @@ export default function BannerSection() {
 
           "
         >
-          Log in for saved addresses
+          Log in for saved addresses <ChevronRight size={16} strokeWidth={2} />
         </button>
       </div>
     </section>

@@ -1,4 +1,5 @@
 import { BrandLogosFirstRow, BrandLogosSecondRow } from "@/constant/sections";
+import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Marquee from "react-fast-marquee";
 
@@ -32,6 +33,22 @@ export default function BrandSection() {
               ))}
           </div>
         </Marquee>
+        <button
+          className="
+          leading-[1.4]
+          text-[14px]
+          px-[20px] py-[13px]
+          flex gap-[8px] items-center
+          duration-300
+          cursor-pointer
+          text-gray-200
+          font-poppins
+          rounded-full
+          "
+        >
+          Popular around you right now
+          <ChevronRight size={16} strokeWidth={2} />
+        </button>
       </div>
     </section>
   );

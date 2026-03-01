@@ -6,6 +6,7 @@
   --font-poppins: var(--font-poppins);
 }
 
-:root {
-  --outlineFocused: #0f2594;
+body {
+  background-color: black;
 }
+
