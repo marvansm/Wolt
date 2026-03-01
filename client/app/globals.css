@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+
+@theme inline {
+  --font-fredoka: var(--font-fredoka);
+  --font-poppins: var(--font-poppins);
+}
+
+:root {
+  --outlineFocused: #0f2594;
+}
