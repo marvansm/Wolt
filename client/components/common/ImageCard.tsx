@@ -13,14 +13,16 @@ export default function ImageCard({
 }: ImageCardProps) {
     return (
         <div className={`relative w-full h-[35rem] group cursor-pointer overflow-hidden rounded-3xl ${className}`}>
-            <Image
-                fill
-                src={imageSrc}
-                alt={alt}
-                className="object-cover group-hover:scale-[1.1] duration-500"
-                sizes="50vw"
-                priority={imagePriority}
-            />
+            {imageSrc && (
+                <Image
+                    fill
+                    src={imageSrc as string}
+                    alt={alt || ""}
+                    className="object-cover group-hover:scale-[1.1] duration-500"
+                    sizes="50vw"
+                    priority={imagePriority}
+                />
+            )}
             <div className="p-[32px] absolute top-0 left-0">
                 <h2 className="mb-[12px] font-fredoka text-white font-bold text-[3.5rem]">
                     {title}

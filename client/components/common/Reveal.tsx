@@ -25,7 +25,7 @@ export default function Reveal({
                 x: direction === "left" ? -50 : direction === "right" ? 50 : 0,
                 y: direction === "up" ? 50 : direction === "down" ? -50 : 0,
             },
-            visible: {
+            visible: {  
                 opacity: 1,
                 x: 0,
                 y: 0,

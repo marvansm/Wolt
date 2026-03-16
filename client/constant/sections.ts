@@ -53,3 +53,122 @@ export const BrandLogosSecondRow = [
   "https://imageproxy.wolt.com/mes-image/0175bc8b-36eb-4edf-a523-08214ab73151/6e66c2b9-4348-44a0-b6fe-138da93d29b7",
   "https://imageproxy.wolt.com/mes-image/7ef3a522-e8e3-4c11-8be7-08642ce8d59f/92e359dd-0b07-44fb-8008-e0e94a14b789",
 ];
+
+export const WhyWoltContent = [
+  {
+    id: 1,
+    img: "https://images.ctfassets.net/23u853certza/8N77V75bIzQWiHOXjXAaZ/d6769eb98c1681e07b514f28e2776a11/aze-cp-1.jpg?w=3840&q=75&fm=webp",
+    title: " Competitive Earnings",
+    firstFeat: "✔ The more you deliver, the more money you can earn",
+    scndFeat: "✔ Get paid per delivery and distance covered",
+    bg: "#002C3F",
+  },
+  {
+    id: 2,
+    img: "https://images.ctfassets.net/23u853certza/2kT4VgsRi0i9BQt4vDdpXm/61f4218d24d96cce42c8522969f27bfa/aze-cp-2.jpg?w=3840&q=75&fm=webp",
+    title: "Flexible hours",
+    firstFeat: "✔ Unlike full-time or part-time jobs, you decided your own hours",
+    scndFeat: "✔ Delivering with Wolt fits easily into your day-to-day life – giving you a flexible way to work",
+    bg: "#100418",
+  },
+  {
+    id: 3,
+    img: "https://images.ctfassets.net/23u853certza/3rvGJ2gIApWjjduLNs8lAX/a7e788ddb8e0c6c53609d5fdf0fe9905/aze-cp-3.jpg?w=3840&q=75&fm=webp",
+    title: "Amazing support",
+    firstFeat: "✔ Wolt's Support Team are on hand should you ever need help",
+    scndFeat: "✔ The Courier Partner app makes it easy to find your way around town",
+    bg: "#0A0A0A",
+  },
+];
+
+export const CourierFaqData = [
+  {
+    id: 1,
+    question: "How long does the application process take?",
+    answer: "The application process usually takes a few minutes to submit. Review times vary depending on the city's current demand for courier partners.",
+  },
+  {
+    id: 2,
+    question: "Are there other requirements to deliver?",
+    answer: "Yes, requirements include being 18+ years old, having a valid ID, and a smartphone with the Wolt Courier Partner app installed.",
+  },
+  {
+    id: 3,
+    question: "What does delivering using Wolt offer that traditional delivery jobs don't?",
+    answer: "Wolt offers complete flexibility — you choose when and where you work. You are your own boss!",
+  },
+  {
+    id: 4,
+    question: "How does the Wolt Courier Partner app work?",
+    answer: "The app is your primary tool. It notifies you of available orders, provides navigation to the pickup and drop-off points, and tracks your earnings.",
+  },
+];
+
+export const CourierTestimonialsData = [
+  {
+    id: 1,
+    name: "Harun",
+    city: "Baku",
+    quote: "I joined Wolt as a partner a year ago and really like this journey :) Independence is key for me, so delivering with Wolt provides the perfect opportunity to make ends meet, without needing to sit behind a desk all day.",
+    image: "https://images.ctfassets.net/23u853certza/1hCvnoiEEGTpED0DWN4Xae/d702d63a9a0c7c1dfd2084a1f6bfacc0/aze-harun.jpeg?w=384&q=75&fm=webp",
+  },
+  {
+    id: 2,
+    name: "Alexander",
+    city: "Tbilisi",
+    quote: "I wanted to have a work with my own schedule that will fit all my hobbies and it was a perfect match. I also love to meet new people when delivering, and the few hours a week that I'm online help keep me connected to my community.",
+    image: "https://images.ctfassets.net/23u853certza/7LjUuAjpS99Ni8bfuxBkBZ/8f36db570c65ec83ed65630b74ecaef9/IMG_8543.jpg?w=384&q=75&fm=webp",
+  },
+  {
+    id: 3,
+    name: "Hüseyn",
+    city: "Sumqayıt",
+    quote: "I take orders when I want and can manage my earnings easily. As a student, delivering food with Wolt is the perfect way to earn money in my spare time, while focusing on my studies. Support is awesome!",
+    image: "https://images.ctfassets.net/23u853certza/31kqCC4XFeAPdroT4gp4wW/b5242476c3355164e0ec189c66ddd7b1/aze-huseyn.png?w=384&q=75&fm=webp",
+  },
+];
+
+export const MerchantHeroData = {
+  title: "Grow your business with Wolt",
+  description: "Join Wolt and sell to customers already ordering in your area.",
+  image: "https://images.ctfassets.net/23u853certza/1WzCY4xOjsoRSKvPFcaSar/0cdba5f458833d7613fec14b92e50444/Merchant-Hero-Web-final-cropped.jpg?w=1080&q=75&fm=webp",
+};
+
+export const MerchantWhyWoltData = [
+  {
+    id: 1,
+    title: "Get insights you can use",
+    content: "Track revenue, popular items, and average order size. Know your customers better (new vs. returning, Wolt+ subscribers). Monitor accuracy, cancellations, and preparation times.",
+    image: "https://images.ctfassets.net/23u853certza/6H2acZHlqQ8co3ynXVejQH/dc2056b143b2fd7563ce851ac43532e6/MLP_Insights.png?w=640&q=75&fm=webp",
+  },
+  {
+    id: 2,
+    title: "Support when you need it",
+    content: "24/7 support for orders, account help, and customer questions. Automatic delivery-related customer service. Access to a Learning Center for management tips.",
+    image: "https://images.ctfassets.net/23u853certza/6gHavByt57jUpOvKooYAv7/071d96da73eae9156d9fc7e300be1b0c/MLP_Support.png?w=640&q=75&fm=webp",
+  },
+];
+
+export const MerchantHowItWorksData = [
+  {
+    id: 1,
+    step: "01",
+    title: "Customers place an order",
+    description: "Customers find your store and buy your products in the Wolt app.",
+    image: "https://images.ctfassets.net/23u853certza/1cnwlSkS4CXhYgefvmLQS1/055c3365ee98ec69a5094bcec224c460/01CustomersOrderYourGoods.png?w=384&q=75&fm=webp",
+  },
+  {
+    id: 2,
+    step: "02",
+    title: "You prepare the order",
+    description: "Use our Merchant App to accept and prepare incoming orders.",
+    image: "https://images.ctfassets.net/23u853certza/4WGI0B4rR5pms71QPAw2Au/8c4a36a39a07ff38c55f2ca88ad828c4/02YouGetYourOrdersReady.png?w=384&q=75&fm=webp",
+  },
+  {
+    id: 3,
+    step: "03",
+    title: "We deliver your order",
+    description: "Our pickup or delivery options get your products to your customers quickly.",
+    image: "https://images.ctfassets.net/23u853certza/4sjea6JKFjX6m0hlLNBtfb/4b4a68abdff75f17ea7aa1312e8fc1a6/03StoreToDoor.png?w=384&q=75&fm=webp",
+  },
+];

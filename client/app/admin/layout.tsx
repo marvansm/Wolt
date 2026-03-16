@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import '../globals.css'
+import TanstackQueryProvider from '@/providers/TanstackQueryProvider';
 
 const geist = Geist({
     subsets: ["latin"],
@@ -43,10 +44,12 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={`${geist.variable} ${geistMono.variable} font-sans antialiased bg-background text-foreground`}>
-                {children}
-                <Analytics />
-            </body>
+            <TanstackQueryProvider>
+                <body className={`${geist.variable} ${geistMono.variable} font-sans antialiased bg-background text-foreground`}>
+                    {children}
+                    <Analytics />
+                </body>
+            </TanstackQueryProvider>
         </html>
     )
 }
