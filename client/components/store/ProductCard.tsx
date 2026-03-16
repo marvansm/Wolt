@@ -23,11 +23,7 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
       className="bg-[#1f1f1f] rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform duration-200 cursor-pointer flex flex-col h-full relative group shadow-lg border border-white/5"
     >
       <div className="bg-white relative aspect-square w-full flex items-center justify-center p-6 m-0">
-        {product.badge && (
-          <div className="absolute top-3 left-3 z-10 bg-wolt-red text-white text-[11px] font-extrabold px-2 py-1 rounded-lg shadow-md">
-            {product.badge}
-          </div>
-        )}
+  
 
         {product.image ? (
           <div className="relative w-full h-full">

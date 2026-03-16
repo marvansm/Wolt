@@ -43,11 +43,7 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
             ) : (
               <div className="w-24 h-24 bg-white/10 rounded-full" />
             )}
-            {product.badge && (
-               <div className="absolute top-4 left-4 z-10 bg-wolt-red text-white text-sm font-bold px-3 py-1.5 rounded-lg shadow-lg">
-                 {product.badge}
-               </div>
-            )}
+
           </div>
 
           <div className="p-6 sm:p-8 space-y-4">

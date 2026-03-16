@@ -27,7 +27,6 @@ export default function StorePage() {
     const deals: any[] = [];
 
     restaurant.menu.forEach((item: any) => {
-      // Add to deals if there's an original price (discount)
       if (item.originalPrice && item.originalPrice > item.price) {
         deals.push(item);
       }
@@ -44,7 +43,6 @@ export default function StorePage() {
       products: cats[key]
     }));
 
-    // Add Deals at the beginning if any exist
     if (deals.length > 0) {
       result.unshift({
         name: "Deals",
