@@ -1,14 +1,16 @@
 "use client";
 
-import { ChevronDown, ChevronRight, ShoppingBag, LogOut } from "lucide-react";
+import { ChevronDown, ChevronRight, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 
 export default function UserDropdown() {
     const { user, logout } = useAuth();
+    const { setIsCartOpen, itemCount } = useCart();
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -137,9 +139,6 @@ export default function UserDropdown() {
                 </AnimatePresence>
             </div>
 
-            <div className="w-[40px] h-[40px] bg-white/10 hover:bg-white/20 transition-colors rounded-full flex items-center justify-center cursor-pointer">
-                <ShoppingBag size={20} className="text-white" />
-            </div>
         </div>
     );
 }

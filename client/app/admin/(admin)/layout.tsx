@@ -14,6 +14,7 @@ const sidebarItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Orders", href: "/admin/orders", icon: ShoppingBag },
     { name: "Restaurants", href: "/admin/restaurants", icon: UtensilsCrossed },
+    { name: "Stores", href: "/admin/stores", icon: ShoppingBag },
     { name: "Categories", href: "/admin/categories", icon: Grid2X2 },
 ];
 

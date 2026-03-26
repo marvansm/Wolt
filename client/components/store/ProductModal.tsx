@@ -1,16 +1,14 @@
 "use client";
 
+import { ProductModalProps } from "@/types/global";
 import { X, Plus, Minus } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { useCart } from "@/context/CartContext";
 
-interface ProductModalProps {
-  product: any;
-  onClose: () => void;
-}
-
-export default function ProductModal({ product, onClose }: ProductModalProps) {
+export default function ProductModal({ product, onClose, restaurant }: ProductModalProps) {
   const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -32,13 +30,13 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
         </button>
 
         <div className="overflow-y-auto hide-scrollbar flex-1">
-          <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] bg-white/5 flex items-center justify-center p-8">
+          <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] bg-[#1a1a1a] rounded-t-2xl overflow-hidden flex items-center justify-center p-8">
             {product.image ? (
               <Image 
                 src={product.image} 
                 alt={product.name} 
                 fill 
-                className="object-contain p-8 mix-blend-screen" 
+                className="object-contain p-8" 
               />
             ) : (
               <div className="w-24 h-24 bg-white/10 rounded-full" />
@@ -56,7 +54,7 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
                   AZN {product.price.toFixed(2)}
                 </span>
                 {product.originalPrice && (
-                  <span className="text-gray-400 line-through text-sm">
+                  <span className="text-white/50 line-through text-sm">
                     AZN {product.originalPrice.toFixed(2)}
                   </span>
                 )}
@@ -64,12 +62,12 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
             </div>
 
              {product.description && (
-               <p className="text-[#a3a3a3] text-base leading-relaxed">
+               <p className="text-white/80 text-base leading-relaxed">
                  {product.description}
                </p>
              )}
 
-            <div className="flex flex-wrap items-center gap-4 text-sm text-[#737373] bg-[#1f1f1f] p-4 rounded-xl">
+            <div className="flex flex-wrap items-center gap-4 text-sm text-white/70 bg-[#1f1f1f] p-4 rounded-xl">
               {product.weight && (
                 <div className="flex items-center gap-2">
                    <span className="font-semibold text-white">Weight:</span>
@@ -106,7 +104,13 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
             </button>
           </div>
 
-          <button className="flex-1 bg-[#009de0] hover:bg-[#0088c2] text-white h-14 rounded-xl font-bold text-lg flex items-center justify-between px-6 transition-colors shadow-lg shadow-[#009de0]/20">
+          <button 
+            onClick={() => {
+              addToCart({ ...product, quantity }, restaurant);
+              onClose();
+            }}
+            className="flex-1 bg-[#009de0] hover:bg-[#0088c2] text-white h-14 rounded-xl font-bold text-lg flex items-center justify-between px-6 transition-colors shadow-lg shadow-[#009de0]/20"
+          >
             <span>Add to order</span>
             <span>AZN {(product.price * quantity).toFixed(2)}</span>
           </button>

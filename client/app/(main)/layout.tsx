@@ -5,6 +5,7 @@ import "../globals.css";
 import MainLayout from "@/components/layout/MainLayout";
 import TanstackQueryProvider from "@/providers/TanstackQueryProvider";
 import { AuthProvider } from "@/context/AuthContext";
+import { CartProvider } from "@/context/CartContext";
 
 const fontFredoka = Fredoka({
   variable: "--font-fredoka",
@@ -33,7 +34,9 @@ export default function RootLayout({
       >
         <TanstackQueryProvider>
           <AuthProvider>
-            <MainLayout>{children}</MainLayout>
+            <CartProvider>
+              <MainLayout>{children}</MainLayout>
+            </CartProvider>
           </AuthProvider>
         </TanstackQueryProvider>
       </body>

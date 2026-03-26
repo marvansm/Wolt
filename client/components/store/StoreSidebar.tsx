@@ -1,9 +1,7 @@
+import { StoreSidebarProps } from "@/types/global";
 import { Compass, Percent, Star, Tag, Zap, Coffee, Pizza, Utensils, Apple } from "lucide-react";
 
-interface StoreSidebarProps {
-  categories: string[];
-  activeCategory?: string;
-}
+
 
 const CATEGORY_ICONS: Record<string, any> = {
   "Deals": <Percent size={18} className="text-wolt-red" />,

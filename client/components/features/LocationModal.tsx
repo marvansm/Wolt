@@ -11,20 +11,7 @@ interface LocationModalProps {
     onSelectLocation: (location: string) => void;
 }
 
-const BAKU_STREETS = [
-    "Nizami Street",
-    "Neftchilar Avenue",
-    "Istiglaliyyat Street",
-    "Rashid Behbudov Street",
-    "Uzeyir Hajibeyov Street",
-    "Azerbaijan Avenue",
-    "Tiblisi Avenue",
-    "Heydar Aliyev Avenue",
-    "Bulbul Avenue",
-    "Zarifa Aliyeva Street",
-    "28 May Street",
-    "Huseyn Javid Avenue",
-];
+
 
 export default function LocationModal({
     isOpen,
@@ -38,14 +25,32 @@ export default function LocationModal({
     const modalRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (search.length > 1) {
-            const filtered = BAKU_STREETS.filter((street) =>
-                street.toLowerCase().includes(search.toLowerCase())
-            );
-            setSuggestions(filtered);
-        } else {
-            setSuggestions([]);
-        }
+        const fetchSuggestions = async () => {
+            if (search.length > 2) {
+                try {
+                    const response = await fetch(
+                        `https://photon.komoot.io/api/?q=${encodeURIComponent(search)}&limit=5`
+                    );
+                    const data = await response.json();
+                    const features = data.features || [];
+                    
+                    const formatted = features.map((f: any) => {
+                        const p = f.properties;
+                        const parts = [p.name, p.city, p.country].filter(Boolean);
+                        return parts.join(", ");
+                    });
+
+                    setSuggestions(Array.from(new Set(formatted)));
+                } catch (error) {
+                    console.error("Error fetching suggestions:", error);
+                }
+            } else {
+                setSuggestions([]);
+            }
+        };
+
+        const timeoutId = setTimeout(fetchSuggestions, 300);
+        return () => clearTimeout(timeoutId);
     }, [search]);
 
     const handleGetCurrentLocation = () => {
@@ -60,9 +65,17 @@ export default function LocationModal({
                         );
                         const data = await response.json();
                         const address = data.address;
-                        const street = address.road || address.street || address.suburb || address.city || data.display_name;
+                        const street = address.road || address.street || address.suburb;
+                        const city = address.city || address.town || address.village || address.state;
+                        
+                        let detailedAddress = "";
+                        if (street && city) {
+                            detailedAddress = `${street}, ${city}`;
+                        } else {
+                            detailedAddress = street || city || data.display_name;
+                        }
 
-                        setSearch(street);
+                        setSearch(detailedAddress);
                     } catch (error) {
                         console.error("Error reverse geocoding:", error);
                         setSearch("Current Location (" + position.coords.latitude.toFixed(4) + ", " + position.coords.longitude.toFixed(4) + ")");

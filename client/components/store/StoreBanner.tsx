@@ -1,83 +1,116 @@
+import React, { useState, useEffect } from 'react';
+import { StoreBannerProps } from "@/types/global";
 import { Star, Clock, Info, Search, Heart, Share, Users } from "lucide-react";
 
-interface StoreBannerProps {
-  restaurant: {
-    name: string;
-    description: string;
-    image?: string;
-    banner?: string;
-    avatar?: string;
-    deliveryTime: string;
-    rating: number;
-    priceRange: string;
-    deliveryFee: string;
-    minOrderAmount?: number;
-  }
-}
 
 export default function StoreBanner({ restaurant }: StoreBannerProps) {
+  const getInitialAvatar = (avatar?: string) => {
+    if (!avatar) return null;
+    if (avatar.startsWith('http')) return avatar;
+    if (avatar.startsWith('assets/')) {
+       const id = avatar.split('/').pop();
+       return `https://imageproxy.wolt.com/wolt-menu-images-venue-avatar/${id}`;
+    }
+    return avatar;
+  };
+
+  const [avatarSrc, setAvatarSrc] = useState<string | null>(getInitialAvatar(restaurant.avatar));
+  const [retryCount, setRetryCount] = useState(0);
+
+  useEffect(() => {
+    setAvatarSrc(getInitialAvatar(restaurant.avatar));
+    setRetryCount(0);
+  }, [restaurant]);
+
+  const handleAvatarError = () => {
+    if (retryCount === 0 && restaurant.avatar?.startsWith('assets/')) {
+      const id = restaurant.avatar.split('/').pop();
+      setAvatarSrc(`https://imageproxy.wolt.com/venue-images/${id}`);
+      setRetryCount(1);
+    } else if (retryCount <= 1 && restaurant.image) {
+      setAvatarSrc(restaurant.image);
+      setRetryCount(2);
+    } else {
+      setAvatarSrc(null);
+    }
+  };
+
   return (
-    <div className="relative">
+    <div className="relative bg-black">
       <div 
-        className="w-full h-[250px] md:h-[320px] bg-cover bg-center bg-[#1f1f1f]"
+        className="w-full h-[320px] bg-cover bg-center bg-[#1f1f1f] relative overflow-hidden"
         style={{ 
           backgroundImage: restaurant.banner || restaurant.image ? `url(${restaurant.banner || restaurant.image})` : 'none',
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#000000]/80 via-transparent to-transparent" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-10 flex flex-col md:flex-row gap-6 mb-8">
-        <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-[#00C2E8] shadow-lg flex items-center justify-center overflow-hidden border-4 border-black shrink-0">
-           {restaurant.avatar ? (
-               <img src={restaurant.avatar} alt={restaurant.name} className="w-full h-full object-cover" />
+      <div className="max-w-[1920px] w-full mx-auto px-[32px] sm:px-6 lg:px-8 -mt-20 relative z-10 flex items-end gap-6 mb-4">
+        <div className="w-[124px] h-[124px] rounded-xl bg-[#1f1f1f] shadow-xl flex items-center justify-center overflow-hidden border-4 border-black shrink-0 relative">
+           {avatarSrc ? (
+               <img 
+                 src={avatarSrc} 
+                 alt={restaurant.name} 
+                 className="w-full h-full object-cover" 
+                 onError={handleAvatarError}
+               />
            ) : (
-               <span className="text-white font-bold text-2xl text-center leading-tight">Wolt<br/>Market</span>
+               <div className="w-full h-full flex items-center justify-center bg-[#2b2b2b] text-white font-bold text-4xl uppercase">
+                 {restaurant.name?.charAt(0) || "W"}
+               </div>
            )}
         </div>
 
-        <div className="flex-grow flex flex-col justify-end pb-2">
-          <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-2">{restaurant.name}</h1>
-          <p className="text-gray-200 font-medium text-sm md:text-base mt-1 line-clamp-1">{restaurant.description}</p>
+        <div className="flex-grow flex flex-col justify-end h-full pb-2">
+          <h1 className="text-4xl md:text-[44px] tracking-tight font-extrabold text-white leading-none mb-1">{restaurant.name}</h1>
+          <p className="text-white/70 font-medium text-base mt-2">{restaurant.description || "I'm lovin' it!"}</p>
         </div>
       </div>
       
-      <div className="border-b border-white/10 bg-black pb-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-6 overflow-x-auto whitespace-nowrap hide-scrollbar py-2">
-             <div className="flex items-center bg-[#282828] rounded-full p-1 pl-3 pr-4 shadow-sm border border-white/5">
-                <Clock size={16} className="text-wolt-blue mr-2" />
-                <span className="text-white text-sm font-semibold">{restaurant.deliveryTime}</span>
-             </div>
-             
-             <div className="flex items-center gap-1.5 text-wolt-yellow font-bold text-sm bg-black px-2 py-1 rounded-full border border-white/10">
-                <Star size={18} fill="currentColor" />
-                <span>{restaurant.rating}</span>
-             </div>
+      <div className="bg-black border-y border-[#1f1f1f] py-3">
+        <div className="max-w-[1920px] w-full mx-auto px-[32px] sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-6 overflow-x-auto hide-scrollbar">
+            <div className="flex bg-[#141414] p-1 rounded-full border border-[#2b2b2b] shrink-0">
+              <button className="flex items-center gap-2 px-4 py-1.5 bg-[#2b2b2b] rounded-full text-white text-sm font-semibold transition-all">
+                <Clock size={16} color="blue" />
+                Delivery 35–45 min
+              </button>
+              <button className="flex items-center gap-2 px-4 py-1.5 text-white/50 text-sm font-semibold hover:text-white transition-all">
+                <Users size={16} />
+                Pickup
+              </button>
+            </div>
 
-             <div className="text-gray-400 text-sm flex items-center gap-1.5 cursor-pointer hover:text-white transition-colors">
-                <span className="hidden sm:inline">Min. order AZN {restaurant.minOrderAmount ? restaurant.minOrderAmount.toFixed(2) : "10.00"}</span>
-                <span className="w-1 h-1 bg-gray-600 rounded-full mx-1"></span>
-                <span>{restaurant.deliveryFee}</span>
-             </div>
-             
-             <div className="text-wolt-blue font-semibold text-sm cursor-pointer hover:text-wolt-blue/80 transition-colors">
-                Venue details
-             </div>
+            <div className="flex items-center gap-2 text-sm font-medium whitespace-nowrap">
+              <div className="flex items-center gap-1.5 text-yellow-300">
+                <Star size={16} fill="currentColor" color="white" />
+                <span>{restaurant.rating || "8.6"}</span>
+              </div>
+              <span className="text-white/20 font-bold">·</span>
+              <span className="text-white">Open until 03:00</span>
+              <span className="text-white/20 font-bold">·</span>
+              <span className="text-white">Min. order AZN {restaurant.minOrderAmount?.toFixed(2) || "6.00"}</span>
+              <span className="text-white/20 font-bold">·</span>
+              <span className="text-blue-400 font-semibold">{restaurant.deliveryFee || "AZN 0.49"}</span>
+              <span className="text-white/20 font-bold">·</span>
+              <button className="text-blue-400 font-semibold hover:underline">Restaurant details</button>
+            </div>
           </div>
-          
-          <div className="flex flex-wrap items-center gap-3">
-             <div className="bg-[#1A3340] text-wolt-blue flex items-center px-4 py-2 rounded-full cursor-pointer hover:brightness-110 transition-all font-medium text-sm border border-[#00B4D8]/20">
-               <Clock size={16} className="mr-2" />
-               Schedule order
-             </div>
-             <div className="bg-[#1A3340] text-wolt-blue flex items-center px-4 py-2 rounded-full cursor-pointer hover:brightness-110 transition-all font-medium text-sm border border-[#00B4D8]/20 hidden sm:flex">
-               <Users size={16} className="mr-2" />
-               Order together
-             </div>
-             <div className="w-10 h-10 rounded-full bg-[#1A3340] flex items-center justify-center text-wolt-blue cursor-pointer hover:brightness-110 transition-all border border-[#00B4D8]/20 shrink-0">
-               <Heart size={18} />
-             </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <button className="flex items-center gap-2 px-4 py-2 bg-[#1a3a4a] text-blue-400 rounded-full text-sm font-semibold hover:brightness-110 transition-all border border-blue-400/20">
+              <Clock size={18} />
+              Schedule order
+              <span className="ml-1 opacity-60">▼</span>
+            </button>
+            <button className="flex items-center gap-2 px-4 py-2 bg-[#1a3a4a] text-blue-400 rounded-full text-sm font-semibold hover:brightness-110 transition-all border border-blue-400/20">
+              <Users size={18} />
+              Order together
+            </button>
+            <button className="w-10 h-10 flex items-center justify-center bg-[#1a3a4a] text-blue-400 rounded-full hover:brightness-110 transition-all border border-blue-400/20">
+              <Heart size={20} />
+            </button>
           </div>
         </div>
       </div>

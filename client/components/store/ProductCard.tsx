@@ -1,66 +1,55 @@
 import Image from "next/image";
 import { Plus } from "lucide-react";
+import { ProductCardProps } from "@/types/global";
 
-interface ProductCardProps {
-  product: {
-    _id?: string;
-    name: string;
-    price: number;
-    originalPrice?: number;
-    description?: string;
-    image?: string;
-    weight?: string;
-    unitPrice?: string;
-    badge?: string;
-  };
-  onClick?: () => void;
-}
+
 
 export default function ProductCard({ product, onClick }: ProductCardProps) {
   return (
     <div
       onClick={onClick}
-      className="bg-[#1f1f1f] rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform duration-200 cursor-pointer flex flex-col h-full relative group shadow-lg border border-white/5"
+      className="bg-[#191919] rounded-xl overflow-hidden hover:bg-[#222222] transition-colors duration-200 cursor-pointer flex p-3 h-[140px] relative group border border-transparent"
     >
-      <div className="bg-white relative aspect-square w-full flex items-center justify-center p-6 m-0">
-  
+      <div className="flex-1 flex flex-col justify-between pr-4">
+        <div>
+          <h4 className="text-white font-bold text-sm line-clamp-2 leading-tight mb-1">
+            {product.name}
+          </h4>
+          {product.description && (
+            <p className="text-white/60 text-xs line-clamp-2 leading-snug mb-2 font-medium">
+              {product.description}
+            </p>
+          )}
+        </div>
 
+        <div className="flex items-center gap-2">
+          <span className="text-blue-400 font-bold text-sm">AZN {product.price.toFixed(2)}</span>
+          {product.originalPrice && (
+            <span className="text-white/40 text-xs line-through">AZN {product.originalPrice.toFixed(2)}</span>
+          )}
+        </div>
+      </div>
+
+      <div className="relative w-[110px] h-full shrink-0">
         {product.image ? (
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full rounded-xl overflow-hidden">
             <Image
               src={product.image}
               alt={product.name}
               fill
-              className="object-contain p-2"
-              sizes="(max-width: 768px) 50vw, 33vw"
+              className="object-cover transition-transform group-hover:scale-110 duration-500"
+              sizes="110px"
             />
           </div>
         ) : (
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-            <div className="w-8 h-8 bg-gray-200 rounded-full" />
+          <div className="w-full h-full bg-[#141414] rounded-xl flex items-center justify-center">
+            <div className="w-8 h-8 bg-gray-600/20 rounded-full" />
           </div>
         )}
 
-        <button className="absolute top-3 right-3 w-9 h-9 bg-gray-600 hover:bg-[#2b2b2b] rounded-xl flex items-center justify-center text-wolt-blue shadow-lg border border-white/5 transition-all">
-          <Plus size={20} color="white" />
+        <button className="absolute bottom-2 right-2 w-7 h-7 bg-[#1A3340] hover:bg-wolt-blue hover:text-white rounded-lg flex items-center justify-center text-wolt-blue shadow-lg transition-all">
+          <Plus size={18} strokeWidth={3} color="blue" />
         </button>
-      </div>
-
-      <div className="p-4 flex flex-col flex-grow">
-        <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-          <span className="text-wolt-blue text-red-500 font-bold text-base leading-none">AZN {product.price.toFixed(2)}</span>
-          {product.originalPrice && (
-            <span className="text-gray-500 text-xs line-through leading-none">AZN {product.originalPrice.toFixed(2)}</span>
-          )}
-        </div>
-        <h4 className="text-white font-bold text-sm line-clamp-2 leading-snug mb-3">
-          {product.name}
-        </h4>
-
-        <div className="mt-auto flex items-center justify-between text-[11px] font-bold text-[#737373] tracking-tight">
-          <span className="uppercase">{product.weight}</span>
-          <span>{product.unitPrice && `AZN ${product.unitPrice}/kg`}</span>
-        </div>
       </div>
     </div>
   );
