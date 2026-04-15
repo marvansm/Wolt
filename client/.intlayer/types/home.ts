@@ -1,0 +1,114 @@
+/* eslint-disable */
+export default {
+  "key": "home",
+  "content": {
+    "nodeType": "translation",
+    "translation": {
+      "en": {
+        "banner": {
+          "newUsers": "New users get 14 days of 0₼ delivery",
+          "title": "Flowers. Delivered.",
+          "placeholder": "Enter delivery address",
+          "loginSaved": "Log in for saved addresses"
+        },
+        "brand": {
+          "popular": "Popular around you right now"
+        },
+        "lifeTastes": {
+          "title": "Life tastes better with Wolt",
+          "description": "Almost everything delivered to you – quickly, reliably, and affordably",
+          "supportTitle": "Real support from real people",
+          "supportDesc": "Our world-class support team has your back, with friendly assistance and fast response times.",
+          "woltPlusTitle": "0₼ delivery fees with Wolt+",
+          "woltPlusDesc": "Enjoy zero delivery fees from the best restaurants and stores in your city."
+        },
+        "features": {
+          "boostSales": "Boost your sales",
+          "boostSalesDesc": "91% of Wolt orders are extra sales you wouldn't otherwise get.",
+          "heavyLifting": "We do the heavy lifting",
+          "heavyLiftingDesc": "We handle ads, payments, delivery and support.",
+          "riskFree": "It's 100% risk-free",
+          "riskFreeDesc": "There's no fee for joining Wolt. You can quit whenever, for any reason. When you earn, we earn.",
+          "logistics": "Power online sales with same-hour deliveries",
+          "logisticsDesc": "Add Wolt Drive logistics for fast, affordable express deliveries for e-commerce.",
+          "learnMore": "Learn more",
+          "forRestaurants": "For restaurants",
+          "forStores": "For stores"
+        },
+        "heroCards": {
+          "growBusiness": "For restaurants and stores",
+          "growBusinessDesc": "Let's grow your business together",
+          "forCouriers": "For couriers",
+          "forCouriersDesc": "Earn when and where you want",
+          "getStarted": "Get started"
+        },
+        "carrier": {
+          "becomeCourier": "Become a courier partner",
+          "becomeCourierDesc": "Earn by delivering to local customers. Set your own schedule, deliver when and where you want.",
+          "reachNewCustomers": "Reach new customers",
+          "reachNewCustomersDesc": "We help you to grow your business by helping thousands of people find your venue."
+        },
+        "learnMore": {
+          "competitiveEarnings": "Competitive earnings",
+          "competitiveEarningsDesc": "The more you deliver, the more money you can earn. Get paid per delivery and for distance covered.",
+          "flexibleHours": "Flexible hours",
+          "flexibleHoursDesc": "Choose your own hours and set your own schedule. Plus, no delivery experience required."
+        }
+      },
+      "tr": {
+        "banner": {
+          "newUsers": "Yeni kullanıcılara 14 gün boyunca 0₼ teslimat ücreti",
+          "title": "Çiçekler. Teslim Edildi.",
+          "placeholder": "Teslimat adresini girin",
+          "loginSaved": "Kayıtlı adresler için giriş yapın"
+        },
+        "brand": {
+          "popular": "Şu an çevrenizde popüler"
+        },
+        "lifeTastes": {
+          "title": "Wolt ile hayatın tadı bir başka",
+          "description": "Neredeyse her şey size teslim edilir – hızlı, güvenilir ve uygun fiyatlı",
+          "supportTitle": "Gerçek insanlardan gerçek destek",
+          "supportDesc": "Dünya standartlarındaki destek ekibimiz, dostça yardım ve hızlı yanıt süreleriyle yanınızda.",
+          "woltPlusTitle": "Wolt+ ile 0₼ teslimat ücreti",
+          "woltPlusDesc": "Şehrinizdeki en iyi restoran ve mağazalardan sıfır teslimat ücretinin tadını çıkarın."
+        },
+        "features": {
+          "boostSales": "Satışlarınızı artırın",
+          "boostSalesDesc": "Wolt siparişlerinin %91'i, başka türlü elde edemeyeceğiniz ek satışlardır.",
+          "heavyLifting": "Ağır işleri biz hallediyoruz",
+          "heavyLiftingDesc": "Reklamları, ödemeleri, teslimatı ve desteği biz yönetiyoruz.",
+          "riskFree": "%100 risktsizdir",
+          "riskFreeDesc": "Wolt'a katılmak için herhangi bir ücret yoktur. Herhangi bir nedenle istediğiniz zaman ayrılabilirsiniz. Siz kazandığınızda biz de kazanırız.",
+          "logistics": "Aynı saatte teslimatlarla online satışlara güç katın",
+          "logisticsDesc": "E-ticaret için hızlı, uygun fiyatlı ekspres teslimatlar için Wolt Drive lojistiğini ekleyin.",
+          "learnMore": "Daha fazla bilgi al",
+          "forRestaurants": "Restoranlar için",
+          "forStores": "Mağazalar için"
+        },
+        "heroCards": {
+          "growBusiness": "Restoranlar ve mağazalar için",
+          "growBusinessDesc": "İşletmenizi birlikte büyütelim",
+          "forCouriers": "Kuryeler için",
+          "forCouriersDesc": "İstediğiniz zaman ve yerde kazanın",
+          "getStarted": "Başlayın"
+        },
+        "carrier": {
+          "becomeCourier": "Kurye ortağı olun",
+          "becomeCourierDesc": "Yerel müşterilere teslimat yaparak kazanın. Kendi programınızı belirleyin, istediğiniz zaman ve yerde teslimat yapın.",
+          "reachNewCustomers": "Yeni müşterilere ulaşın",
+          "reachNewCustomersDesc": "Binlerce insanın mekanınızı bulmasına yardımcı olarak işinizi büyütmenize destek oluyoruz."
+        },
+        "learnMore": {
+          "competitiveEarnings": "Rekabetçi kazançlar",
+          "competitiveEarningsDesc": "Ne kadar çok teslimat yaparsanız, o kadar çok para kazanabilirsiniz. Teslimat başına ve katedilen mesafe için ödeme alın.",
+          "flexibleHours": "Esnek saatler",
+          "flexibleHoursDesc": "Kendi saatlerinizi seçin ve kendi programınızı ayarlayın. Ayrıca, teslimat deneyimi gerekmez."
+        }
+      }
+    }
+  },
+  "localIds": [
+    "home::local::components\\sections\\home\\home.content.ts"
+  ]
+} as const;

@@ -12,7 +12,7 @@ export default function ImageCard({
     children,
 }: ImageCardProps) {
     return (
-        <div className={`relative w-full h-[35rem] group cursor-pointer overflow-hidden rounded-3xl ${className}`}>
+        <div className={`relative w-full h-[25rem] sm:h-[35rem] group cursor-pointer overflow-hidden rounded-3xl ${className}`}>
             {imageSrc && (
                 <Image
                     fill
@@ -23,16 +23,16 @@ export default function ImageCard({
                     priority={imagePriority}
                 />
             )}
-            <div className="p-[32px] absolute top-0 left-0">
-                <h2 className="mb-[12px] font-fredoka text-white font-bold text-[3.5rem]">
+            <div className="p-[24px] md:p-[32px] absolute top-0 left-0">
+                <h2 className="mb-[12px] font-fredoka text-white font-bold text-[2.5rem] md:text-[3.5rem]">
                     {title}
                 </h2>
-                <p className="text-[1.5rem] font-poppins leading-[1.75rem] text-white">
+                <p className="text-[1.125rem] md:text-[1.5rem] font-poppins leading-[1.75rem] text-white">
                     {description}
                 </p>
             </div>
             {bottomElement && (
-                <div className="absolute bottom-0 left-0 p-[32px]">
+                <div className="absolute bottom-0 left-0 p-[24px] md:p-[32px]">
                     {bottomElement}
                 </div>
             )}

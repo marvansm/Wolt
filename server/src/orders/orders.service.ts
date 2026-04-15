@@ -1,39 +1,71 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { Order, OrderDocument } from './entities/order.entity';
 
 @Injectable()
 export class OrdersService {
-  constructor(@InjectModel(Order.name) private orderModel: Model<OrderDocument>) {}
+  constructor(private prisma: PrismaService) {}
 
-  async create(createOrderDto: CreateOrderDto): Promise<Order> {
-    const createdOrder = new this.orderModel(createOrderDto);
-    return createdOrder.save();
+  async create(createOrderDto: CreateOrderDto) {
+    try {
+      if (createOrderDto.paymentMethod === 'credit' && createOrderDto.userId) {
+        const user = await this.prisma.user.findUnique({ where: { id: createOrderDto.userId } });
+        if (!user) {
+          throw new BadRequestException('User not found');
+        }
+        // @ts-ignore
+        if (user.credit < createOrderDto.total) {
+          throw new BadRequestException('Insufficient Wolt credits');
+        }
+        await this.prisma.user.update({
+          where: { id: createOrderDto.userId },
+          // @ts-ignore
+          data: { credit: user.credit - createOrderDto.total }
+        });
+      }
+
+      return await this.prisma.order.create({
+        data: createOrderDto as any,
+      });
+    } catch (error) {
+      console.error('[OrdersService] Error creating order:', error);
+      if (error?.code === 'P2003') {
+        throw new BadRequestException('Restaurant or User or Product does not exist. Please clear your cart and try again.');
+      }
+      throw error;
+    }
   }
 
-  async findAll(): Promise<Order[]> {
-    return this.orderModel.find().exec();
+  async findAll() {
+    return this.prisma.order.findMany();
   }
 
-  async findOne(id: string): Promise<Order> {
-    const order = await this.orderModel.findById(id).exec();
+  async findOne(id: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { id },
+    });
     if (!order) throw new NotFoundException(`Order with ID ${id} not found`);
     return order;
   }
 
-  async update(id: string, updateOrderDto: Partial<CreateOrderDto>): Promise<Order> {
-    const updatedOrder = await this.orderModel
-      .findByIdAndUpdate(id, updateOrderDto, { new: true })
-      .exec();
-    if (!updatedOrder) throw new NotFoundException(`Order with ID ${id} not found`);
-    return updatedOrder;
+  async update(id: string, updateOrderDto: Partial<CreateOrderDto>) {
+    try {
+      return await this.prisma.order.update({
+        where: { id },
+        data: updateOrderDto as any,
+      });
+    } catch {
+      throw new NotFoundException(`Order with ID ${id} not found`);
+    }
   }
 
-  async remove(id: string): Promise<Order> {
-    const deletedOrder = await this.orderModel.findByIdAndDelete(id).exec();
-    if (!deletedOrder) throw new NotFoundException(`Order with ID ${id} not found`);
-    return deletedOrder;
+  async remove(id: string) {
+    try {
+      return await this.prisma.order.delete({
+        where: { id },
+      });
+    } catch {
+      throw new NotFoundException(`Order with ID ${id} not found`);
+    }
   }
 }

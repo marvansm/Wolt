@@ -6,10 +6,7 @@
   --font-poppins: var(--font-poppins);
 }
 
-body {
-  background-color: black;
-}
-
+/* Arka plan @layer base içindeki @apply bg-background ile kontrol ediliyor */
 @keyframes float {
 
   0%,
@@ -37,6 +34,13 @@ body {
 }
 
 @custom-variant dark (&:is(.dark *));
+
+@utility logo-theme {
+  filter: invert(41%) sepia(85%) saturate(3011%) hue-rotate(170deg) brightness(99%) contrast(101%);
+}
+.dark .logo-theme {
+  filter: brightness(0) invert(1) !important;
+}
 
 
 
@@ -153,11 +157,19 @@ body {
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
   * {
     @apply border-border outline-ring/50;
   }
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  button, [role="button"], a {
+    @apply cursor-pointer;
   }
 }

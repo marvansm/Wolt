@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id      String  @id @default(uuid())
+  name    String
+  image   String?
+  bgColor String?
+}
+
+model Restaurant {
+  id             String   @id @default(uuid())
+  name           String
+  description    String?
+  image          String?
+  banner         String?
+  avatar         String?
+  deliveryTime   String?
+  rating         Float?
+  priceRange     String?
+  deliveryFee    String?
+  minOrderAmount Float?
+  promo          String?
+  address        String?
+  latitude       Float?
+  longitude      Float?
+  menu           Json?
+  orders         Order[]
+  reviews        Review[]
+}
+
+model Store {
+  id          String  @id @default(uuid())
+  name        String
+  image       String
+  isSponsored Boolean @default(false)
+  hasWoltPlus Boolean @default(true)
+  latitude    Float?
+  longitude   Float?
+  menu        Json?
+}
+
+model User {
+  id                     String    @id @default(uuid())
+  email                  String    @unique
+  password               String?
+  googleId               String?
+  githubId               String?
+  provider               String    @default("local")
+  firstName              String
+  lastName               String
+  country                String?
+  phoneNumber            String?
+  phonePrefix            String?
+  avatar                 String?
+  favorites              String[]  @default([])
+  isEmailVerified        Boolean   @default(false)
+  isPhoneVerified        Boolean   @default(false)
+  verificationCode       String?
+  resetPasswordCode      String?
+  resetPasswordExpiresAt DateTime?
+  woltPlusExpiresAt      DateTime?
+  credit                 Float     @default(50.0)
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  orders                 Order[]
+  reviews                Review[]
+  addresses              Address[]
+}
+
+model Order {
+  id              String     @id @default(uuid())
+  customerName    String
+  total           Float
+  status          String     @default("pending")
+  createdAt       DateTime   @default(now())
+  deliveryAddress String?
+  restaurantId    String
+  updatedAt       DateTime   @updatedAt
+  userId          String?
+  venueComment    String?
+  paymentMethod   String     @default("card")
+  items           Json
+  tip             Float?
+  deliveryMode    String     @default("delivery")
+  deliveryTimeType String    @default("standard")
+  isGift          Boolean    @default(false)
+  courierNote     String?
+  restaurant      Restaurant @relation(fields: [restaurantId], references: [id])
+  user            User?      @relation(fields: [userId], references: [id])
+}
+
+model Review {
+  id           String      @id @default(uuid())
+  rating       Int         @default(5)
+  comment      String
+  userId       String
+  restaurantId String?
+  createdAt    DateTime    @default(now())
+  productId    String?
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+  user         User        @relation(fields: [userId], references: [id])
+}
+
+model Address {
+  id        String   @id @default(uuid())
+  name      String
+  details   String
+  latitude  Float?
+  longitude Float?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

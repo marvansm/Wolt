@@ -2,14 +2,31 @@
 
 import { Compass, Store, Utensils } from "lucide-react";
 import { useState } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useIntlayer } from "react-intlayer";
 
 export default function DiscoveryHeroSection() {
-  const [activeTab, setActiveTab] = useState("Discovery");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const discovery = useIntlayer("discovery");
+  
+  const activeTab = searchParams.get("tab") || "Discovery";
+
+  const handleTabClick = (tabId: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (tabId === "Discovery") {
+      params.delete("tab");
+    } else {
+      params.set("tab", tabId);
+    }
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const tabs = [
-    { name: "Discovery", icon: <Compass size={20} /> },
-    { name: "Restaurants", icon: <Utensils size={20} /> },
-    { name: "Stores", icon: <Store size={20} /> },
+    { name: discovery.tabs.discovery, id: "Discovery", icon: <Compass size={20} /> },
+    { name: discovery.tabs.restaurants, id: "Restaurants", icon: <Utensils size={20} /> },
+    { name: discovery.tabs.stores, id: "Stores", icon: <Store size={20} /> },
   ];
 
   return (
@@ -17,22 +34,22 @@ export default function DiscoveryHeroSection() {
       <div className="flex items-center justify-center py-[24px]">
         <ul className="flex items-center gap-2">
           {tabs.map((tab) => {
-            const isActive = activeTab === tab.name;
+            const isActive = activeTab === tab.id;
             return (
-              <li key={tab.name}>
+              <li key={tab.id}>
                 <button
-                  onClick={() => setActiveTab(tab.name)}
+                  onClick={() => handleTabClick(tab.id)}
                   className={`
                     py-[8px] px-[16px] rounded-[80px] text-[14px] leading-[1.4] 
                     font-poppins font-semibold flex items-center gap-2 transition-colors cursor-pointer duration-200
                     ${isActive
-                      ? "text-[#202125] bg-[#009de0]"
-                      : "text-gray-400 hover:bg-[#1f1f1f] bg-transparent"
+                      ? "text-white bg-[#009de0]"
+                      : "text-muted-foreground hover:bg-secondary bg-transparent"
                     }
                   `}
                 >
                   {tab.icon}
-                  {tab.name}
+                  {tab.name as any}
                 </button>
               </li>
             );

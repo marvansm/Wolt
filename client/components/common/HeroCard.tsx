@@ -12,18 +12,18 @@ export default function HeroCard({
     imagePriority = false,
 }: HeroCardProps) {
     return (
-        <div className="w-full h-[584px] relative rounded-[24px] overflow-hidden group cursor-pointer">
+        <div className="w-full min-h-[400px] sm:h-[584px] relative rounded-[24px] overflow-hidden group cursor-pointer">
             <Image
                 fill
                 src={imageSrc}
                 alt={alt}
                 className="group-hover:scale-[1.1] duration-500"
             />
-            <div className="absolute flex items-center justify-center flex-col w-full h-full">
-                <p className="text-[2.3rem] font-bold leading-[1.75rem] text-white font-fredoka mb-5">
+            <div className="absolute flex items-center justify-center flex-col w-full h-full p-4">
+                <p className="text-[1.5rem] sm:text-[2.3rem] text-center font-bold leading-[1.75rem] text-white font-fredoka mb-5 px-4">
                     {title} 
                 </p>
-                <h2 className="mb-[12px] font-fredoka text-white font-bold text-[3.5rem] text-center uppercase leading-15">
+                <h2 className="mb-[12px] font-fredoka text-white font-bold text-[2rem] sm:text-[3.5rem] text-center uppercase leading-15 px-4">
                     {description} 
                 </h2>{" "}
                 <button

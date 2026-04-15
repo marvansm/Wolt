@@ -5,10 +5,12 @@ import Reveal from "../../common/Reveal";
 import { useState } from "react";
 import LocationModal from "../../features/LocationModal";
 import { useRouter } from "next/navigation";
+import { useIntlayer } from "react-intlayer";
 
 export default function BannerSection() {
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const router = useRouter();
+  const { banner } = useIntlayer("home");
 
   const handleLocationSelect = (loc: string) => {
     router.push("/discovery");
@@ -35,27 +37,27 @@ export default function BannerSection() {
             shadow-[0_0_8px_0_#2021251f,inset_0_0_0_1px_#ffffff14]
             "
           >
-            New users get 14 days of 0₼ delivery{" "}
+            {banner.newUsers}{" "}
             <ChevronRight size={16} strokeWidth={2} />
           </button>
         </Reveal>
 
         <Reveal direction="up" delay={0.2} className="w-full">
-          <h2 className="uppercase font-bold font-fredoka leading-[1] min-h-[88px] text-[88px]  text-center text-white">
-            Flowers. <br /> Deli vered.
+          <h2 className="uppercase font-bold font-fredoka leading-[1] min-h-[48px] md:min-h-[88px] text-[48px] md:text-[64px] lg:text-[88px] text-center text-white">
+            {banner.title}
           </h2>
         </Reveal>
 
         <Reveal direction="up" delay={0.3} className="w-full flex justify-center">
           <div 
             onClick={() => setIsLocationModalOpen(true)}
-            className="flex items-center bg-[#fff] border border-[#e4e4e5] rounded-full px-[1rem] min-w-[400px] focus:outline-[2px] focus:outline-[var(--outlineFocused)] cursor-pointer hover:shadow-lg transition-shadow"
+            className="flex items-center bg-[#fff] border border-[#e4e4e5] rounded-full px-[1rem] w-full sm:min-w-[400px] sm:max-w-max focus:outline-[2px] focus:outline-[var(--outlineFocused)] cursor-pointer hover:shadow-lg transition-shadow"
           >
             <MapPin color="#202125a3" />
             <input
               type="text"
               name="search"
-              placeholder="Enter delivery address"
+              placeholder={banner.placeholder.value}
               readOnly
               className="text-[#202125] py-[1rem] px-[1rem] outline-0 border-0 w-full cursor-pointer"
             />
@@ -83,7 +85,7 @@ export default function BannerSection() {
             shadow-[0_0_8px_0_#2021251f,inset_0_0_0_1px_#ffffff14]
             "
           >
-            Log in for saved addresses <ChevronRight size={16} strokeWidth={2} />
+            {banner.loginSaved} <ChevronRight size={16} strokeWidth={2} />
           </button>
         </Reveal>
       </div>

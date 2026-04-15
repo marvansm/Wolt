@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
@@ -15,8 +15,20 @@ import {
   CreditCard,
   MessageSquare,
   Ticket,
+  Bike,
+  Lock,
+  Star,
+  Check,
+  Trash2 as TrashIcon,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/services/api";
+import LocationModal from "@/components/features/LocationModal";
+import { useIntlayer } from "react-intlayer";
+import { Button } from "@/components/ui/button";
 
 const MapComponent = dynamic(
   () => import("@/components/features/MapComponent"),
@@ -27,207 +39,252 @@ const MapComponent = dynamic(
 );
 
 export default function CheckoutPageView() {
-  const { items, totalAmount, placeOrder } = useCart();
-  const [deliveryMode, setDeliveryMode] = useState<"delivery" | "pickup">(
-    "delivery",
-  );
+  const checkout = useIntlayer("checkout");
+  if (!checkout) return null;
+  const router = useRouter();
+  const { items, totalAmount, placeOrder, venueComment, setVenueComment, currentAddress } = useCart();
+  const { user } = useAuth();
+  
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "credit">("card");
+  const [deliveryMode, setDeliveryMode] = useState<"delivery" | "pickup">("delivery");
   const [tip, setTip] = useState<number | null>(0);
+  const [loading, setLoading] = useState(false);
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isGift, setIsGift] = useState(false);
+  const [courierNote, setCourierNote] = useState("");
+  const [deliveryTimeOption, setDeliveryTimeOption] = useState<"standard" | "priority" | "schedule">("standard");
+  const [promoDiscount, setPromoDiscount] = useState(0);
+  const [tempComment, setTempComment] = useState("");
+  const [tempNote, setTempNote] = useState("");
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+
+  const itemIds = useMemo(() => items.map(i => i._id || (i as any).id), [items]);
+
+  const { data: ratings } = useQuery({
+    queryKey: ["product-ratings", itemIds],
+    queryFn: () => api.PostData("/reviews/averages", { ids: itemIds, type: "product" }),
+    enabled: itemIds.length > 0,
+  });
+
+  const getRating = (id: string) => {
+    const r = ratings?.find((item: any) => item.id === id);
+    return r ? { average: r.average, count: r.count } : null;
+  };
 
   const bagFee = 0.1;
   const serviceFee = 0.66;
   const deliveryFee = 1.99;
-  const finalTotal =
-    totalAmount + bagFee + serviceFee + deliveryFee + (tip || 0);
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-[#009de0]/30 pb-20">
-      <div className="relative h-[380px] w-full overflow-hidden border-b border-white/10 group">
-        <div className="absolute inset-0 bg-[#0a0a0a]">
-          <MapComponent center={[40.4093, 49.8671]} zoom={15} />
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-[#009de0]/30 pb-20 transition-colors duration-300">
+      {/* Header with Map Background */}
+      <div className="relative h-[280px] w-full overflow-hidden group">
+        <div className="absolute inset-0 z-0">
+          <MapComponent 
+            center={currentAddress?.lat ? [currentAddress.lat, currentAddress.lng] : [40.4093, 49.8671]} 
+            zoom={15} 
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black" />
         </div>
 
-        <div className="absolute top-8 left-8 z-[1000]">
-          <Link
-            href="/discovery"
-            className="w-12 h-12 bg-black/80 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-black transition-all border border-white/5 shadow-2xl group-hover:scale-110 active:scale-95"
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center gap-2">
+           <div className="relative">
+              <div className="w-10 h-10 rounded-full bg-[#009de0] border-4 border-white shadow-xl flex items-center justify-center">
+                <MapPin size={20} className="text-white fill-white" />
+              </div>
+              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black text-white text-[11px] font-bold px-3 py-1 rounded-md shadow-lg border border-white/10 uppercase tracking-widest">
+                {checkout.adjustPin || "Adjust pin"}
+              </div>
+           </div>
+        </div>
+
+        <div className="absolute top-6 left-6 z-20">
+          <button
+            onClick={() => {
+              const returnUrl = typeof window !== 'undefined' ? sessionStorage.getItem('returnUrl') || '/discovery' : '/discovery';
+              router.push(returnUrl);
+            }}
+            className="flex items-center gap-2 bg-black/40 hover:bg-black/60 backdrop-blur-md px-4 py-2 rounded-full text-white transition-all border border-white/10"
           >
-            <ArrowLeft className="text-white" size={24} />
-          </Link>
+            <ArrowLeft size={18} />
+            <span className="font-bold text-sm">{checkout.back || "Back"}</span>
+          </button>
         </div>
 
-        <div className="absolute bottom-12 left-8 z-[1000]">
-          <h1 className="text-[64px] font-black tracking-tight leading-none drop-shadow-2xl">
-            Checkout
+        <div className="absolute bottom-6 left-20 z-20">
+          <h1 className="text-[48px] font-black tracking-tight text-white leading-tight">
+            {checkout.title}
           </h1>
-          <p className="text-white/80 font-bold ml-1 mt-2 text-xl tracking-tight">
+          <p className="text-white/80 font-bold text-lg tracking-tight">
             Shaurma №1 Binagadi
           </p>
-        </div>
-
-        {/* Adjust pin button overlay */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1000] pointer-events-none">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-6 h-6 rounded-full bg-[#009de0] border-[5px] border-white shadow-[0_0_25px_rgba(0,157,224,0.8)] animate-pulse" />
-            <span className="bg-black/95 backdrop-blur-md px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border border-white/10 shadow-2xl">
-              Adjust pin
-            </span>
-          </div>
         </div>
       </div>
 
       <div className="max-w-[1300px] mx-auto px-8 py-12">
         <div className="flex flex-col lg:flex-row gap-16 items-start">
           <div className="flex-1 w-full space-y-16">
-            <div className="flex p-1.5 bg-[#141414] rounded-[22px] w-fit border border-white/5 shadow-inner">
+            <div className="flex bg-[#18191b] p-1 rounded-full w-fit border border-white/5">
               <button
                 onClick={() => setDeliveryMode("delivery")}
-                className={`flex items-center gap-2.5 px-8 py-3.5 rounded-[18px] font-black text-sm transition-all duration-300 ${
+                className={`flex items-center gap-2 px-6 py-2 rounded-full font-bold text-sm transition-all ${
                   deliveryMode === "delivery"
-                    ? "bg-[#25353d] text-[#009de0] shadow-lg scale-[1.02]"
-                    : "text-gray-500 hover:text-white"
+                    ? "bg-white/10 text-white shadow-lg"
+                    : "text-white/40 hover:text-white"
                 }`}
               >
-                <div className="w-5 h-5 flex items-center justify-center">
-                  <MapPin size={18} />
-                </div>
-                Delivery
+                <Bike size={16} />
+                {checkout.delivery}
               </button>
               <button
                 onClick={() => setDeliveryMode("pickup")}
-                className={`flex items-center gap-2.5 px-8 py-3.5 rounded-[18px] font-black text-sm transition-all duration-300 ${
+                className={`flex items-center gap-2 px-6 py-2 rounded-full font-bold text-sm transition-all ${
                   deliveryMode === "pickup"
-                    ? "bg-[#25353d] text-[#009de0] shadow-lg scale-[1.02]"
-                    : "text-gray-500 hover:text-white"
+                    ? "bg-white/10 text-white shadow-lg"
+                    : "text-white/40 hover:text-white"
                 }`}
               >
-                <div className="w-5 h-5 flex items-center justify-center">
-                  🚶
-                </div>
-                Pickup
+                🚶 {checkout.pickup}
               </button>
             </div>
 
-            <section className="space-y-8">
-              <h2 className="text-[36px] font-black tracking-tight">Where?</h2>
-
-              <div className="space-y-4">
-                <button className="w-full bg-[#141414] hover:bg-[#1a1a1a] rounded-[28px] p-6 flex items-center justify-between border border-white/5 transition-all group">
-                  <div className="flex items-center gap-5">
-                    <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-[#009de0] group-hover:scale-110 transition-transform">
-                      <MapPin size={24} />
+            <section className="space-y-6">
+              <h2 className="text-[20px] font-black tracking-tight text-foreground">{checkout.where}</h2>
+              <div className="bg-[#18191b] rounded-[16px] overflow-hidden border border-white/5 divide-y divide-white/5">
+                <button 
+                  onClick={() => setIsLocationModalOpen(true)}
+                  className="w-full p-4 flex items-center justify-between hover:bg-white/5 transition-colors group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="text-white opacity-60">
+                      <MapPin size={22} />
                     </div>
                     <div className="text-left">
-                      <h4 className="text-white font-black text-lg">Home</h4>
-                      <p className="text-gray-500 text-sm font-medium">
-                        89 Ilgar Jumshudov Street
-                      </p>
+                      <div className="flex items-center gap-2">
+                         <span className="text-white font-bold text-sm">
+                           {currentAddress?.details ? checkout.selectedAddress : checkout.chooseAddress}
+                         </span>
+                         <span className="text-white/40 text-xs font-medium truncate max-w-[200px]">
+                            {currentAddress?.details || checkout.tapToChoose}
+                         </span>
+                      </div>
                     </div>
                   </div>
-                  <ChevronRight className="text-gray-600 group-hover:translate-x-1 transition-transform" />
+                  <ChevronRight size={18} className="text-white/20" />
                 </button>
 
-                <div className="bg-[#141414] rounded-[28px] p-6 flex items-center justify-between border border-white/5">
-                  <div className="flex items-center gap-5">
-                    <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-gray-400">
-                      <div className="w-6 h-6 border-2 border-gray-600 rounded-md" />
+                <div className="w-full p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="text-white opacity-60">
+                      <Lock size={22} />
                     </div>
-                    <h4 className="text-white font-black text-lg">
-                      Leave order at the door
-                    </h4>
+                    <span className="text-white font-bold text-sm">{checkout.leaveAtDoor}</span>
                   </div>
-                  <div className="w-14 h-8 bg-[#009de0] rounded-full relative cursor-pointer shadow-lg border border-white/5">
-                    <div className="absolute right-1 top-1 w-6 h-6 bg-white rounded-full shadow-md" />
+                  <div 
+                    onClick={() => {}} 
+                    className="w-11 h-6 bg-white/10 rounded-full relative cursor-pointer border border-white/5"
+                  >
+                    <div className="absolute left-1 top-1 w-4 h-4 bg-white/40 rounded-full transition-all" />
                   </div>
                 </div>
 
-                <button className="w-full bg-[#141414] hover:bg-[#1a1a1a] rounded-[28px] p-6 flex items-center justify-between border border-white/5 transition-all outline-none">
-                  <div className="flex items-center gap-5">
-                    <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-gray-400">
-                      <Gift size={24} />
+                <button 
+                  onClick={() => setIsGift(!isGift)}
+                  className={`w-full p-4 flex items-center justify-between hover:bg-white/5 transition-colors ${isGift ? 'bg-[#009de0]/5' : ''}`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={`text-white ${isGift ? 'opacity-100 text-[#009de0]' : 'opacity-60'}`}>
+                      <Gift size={22} />
                     </div>
-                    <h4 className="text-white font-black text-lg">
-                      Send as a gift
-                    </h4>
+                    <span className={`font-bold text-sm ${isGift ? 'text-[#009de0]' : 'text-white'}`}>
+                      {checkout.sendAsGift} {isGift ? `(${checkout.active})` : ''}
+                    </span>
                   </div>
-                  <ChevronRight className="text-gray-600" />
+                  {isGift ? <Check size={18} className="text-[#009de0]" /> : <ChevronRight size={18} className="text-white/20" />}
                 </button>
 
-                <button className="w-full bg-[#141414] hover:bg-[#1a1a1a] rounded-[28px] p-6 flex items-center justify-between border border-white/5 transition-all outline-none">
-                  <div className="flex items-center gap-5">
-                    <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-gray-400">
-                      <div className="w-6 h-6 border-2 border-dashed border-gray-600 rounded-md" />
-                    </div>
-                    <h4 className="text-white font-black text-lg">
-                      Add note for the courier
-                    </h4>
+                <button 
+                  onClick={() => {
+                    setTempNote(courierNote);
+                    setIsNoteModalOpen(true);
+                  }}
+                  className="w-full p-4 flex items-center justify-between hover:bg-white/5 transition-colors"
+                >
+                  <div className="flex items-center gap-4 text-white/40">
+                    <MessageSquare size={22} />
+                    <span className={`font-bold text-sm italic ${courierNote ? 'text-[#009de0]' : ''}`}>
+                      {courierNote || checkout.addCourierNote}
+                    </span>
                   </div>
-                  <Plus className="text-[#009de0]" />
                 </button>
               </div>
             </section>
 
-            <section className="space-y-8">
-              <h2 className="text-[36px] font-black tracking-tight">When?</h2>
-
-              <div className="space-y-3">
+            <section className="space-y-6">
+              <h2 className="text-[20px] font-black tracking-tight text-white">{checkout.when}</h2>
+              <div className="space-y-2">
                 {[
                   {
                     id: "priority",
-                    title: "Priority",
-                    desc: "15-25 min • Direct to you",
+                    title: checkout.priority,
+                    desc: checkout.priorityDesc,
                     price: "+AZN2.29",
-                    badge: "New",
+                    badge: checkout.new,
                     icon: "⚡",
                   },
                   {
                     id: "standard",
-                    title: "Standard",
-                    desc: "20-30 min",
+                    title: checkout.standard,
+                    desc: checkout.standardDesc,
                     price: "",
                     current: true,
                   },
                   {
                     id: "schedule",
-                    title: "Schedule",
-                    desc: "Choose a delivery time",
+                    title: checkout.schedule,
+                    desc: checkout.scheduleDesc,
                     price: "",
                   },
                 ].map((option) => (
                   <div
                     key={option.id}
-                    className={`p-6 bg-[#141414] rounded-[28px] border cursor-pointer transition-all hover:bg-[#1a1a1a] ${option.current ? "border-[#009de0] ring-2 ring-[#009de0]/20" : "border-white/5"}`}
+                    onClick={() => setDeliveryTimeOption(option.id as any)}
+                    className={`p-4 bg-[#18191b] rounded-[16px] border cursor-pointer transition-all ${deliveryTimeOption === option.id ? "border-[#009de0]" : "border-white/5"}`}
                   >
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-3">
                         <div
-                          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${option.current ? "border-[#009de0]" : "border-gray-600"}`}
+                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${deliveryTimeOption === option.id ? "border-[#009de0]" : "border-white/20"}`}
                         >
-                          {option.current && (
-                            <div className="w-3 h-3 bg-[#009de0] rounded-full" />
+                          {deliveryTimeOption === option.id && (
+                            <div className="w-2.5 h-2.5 bg-[#009de0] rounded-full" />
                           )}
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="text-white font-black text-lg">
+                            <span className="text-white font-bold text-sm">
                               {option.title}
                             </span>
                             {option.icon && (
-                              <span className="text-[#009de0]">
+                              <span className="text-[#009de0] text-xs">
                                 {option.icon}
                               </span>
                             )}
                             {option.badge && (
-                              <span className="bg-[#009de0] text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-tight">
+                              <span className="bg-[#009de0] text-white text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase">
                                 {option.badge}
                               </span>
                             )}
                           </div>
-                          <p className="text-gray-500 text-sm font-medium">
+                          <p className="text-white/40 text-xs font-medium">
                             {option.desc}
                           </p>
                         </div>
                       </div>
-                      <span className="text-white font-bold">
+                      <span className="text-white font-bold text-sm">
                         {option.price}
                       </span>
                     </div>
@@ -236,24 +293,27 @@ export default function CheckoutPageView() {
               </div>
             </section>
 
-            <section className="space-y-8">
+            <section className="space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-[36px] font-black tracking-tight">
-                  Order items
+                <h2 className="text-[20px] font-black tracking-tight text-white">
+                  {checkout.orderItems}
                 </h2>
-                <Link
-                  href="/discovery"
-                  className="text-[#009de0] font-black text-sm hover:underline flex items-center gap-1.5 px-5 py-2.5 bg-[#141414] rounded-2xl border border-white/5 shadow-lg"
+                <button
+                  onClick={() => {
+                    const returnUrl = typeof window !== 'undefined' ? sessionStorage.getItem('returnUrl') || '/discovery' : '/discovery';
+                    router.push(returnUrl);
+                  }}
+                  className="text-[#009de0] font-black text-sm hover:underline flex items-center gap-1.5"
                 >
-                  <Plus size={18} />
-                  Add more
-                </Link>
+                  <Plus size={16} />
+                  {checkout.addMore}
+                </button>
               </div>
 
-              <div className="space-y-6">
+              <div className="bg-[#18191b] rounded-[16px] overflow-hidden border border-white/5 divide-y divide-white/5">
                 {items.map((item) => (
-                  <div key={item._id} className="flex gap-6 items-center group">
-                    <div className="relative w-24 h-24 rounded-[24px] overflow-hidden bg-[#141414] border border-white/5 shrink-0 shadow-xl group-hover:scale-105 transition-transform duration-300">
+                  <div key={item._id} className="p-4 flex gap-4 items-center group">
+                    <div className="relative w-12 h-12 rounded-[8px] overflow-hidden bg-white/5 shrink-0 border border-white/5">
                       <Image
                         src={item.image || "/logo.png"}
                         alt={item.name}
@@ -262,245 +322,330 @@ export default function CheckoutPageView() {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-white font-black text-xl tracking-tight leading-tight">
+                      <h4 className="text-white font-bold text-sm truncate">
                         {item.name}
                       </h4>
-                      <div className="flex items-center gap-3 mt-1.5">
-                        <span className="text-[#009de0] font-bold text-lg">
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[#009de0] font-bold text-sm">
                           AZN {item.price.toFixed(2)}
                         </span>
-                        {item.price > 5 && (
-                          <span className="bg-[#009de0]/10 text-[#009de0] text-[10px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">
-                            Popular
-                          </span>
-                        )}
                       </div>
                     </div>
-                    <div className="w-14 h-14 bg-[#141414] rounded-2xl border border-white/5 flex items-center justify-center text-white font-black text-xl shadow-inner group-hover:bg-[#1a1a1a] transition-all">
+                    <div className="w-8 h-8 bg-white/5 rounded-[6px] flex items-center justify-center text-white font-bold text-sm border border-white/5">
                       {item.quantity}
                     </div>
                   </div>
                 ))}
               </div>
+            </section>
 
-              <div className="bg-[#141414] rounded-[32px] p-8 flex items-center justify-between border border-white/5 mt-12 hover:bg-[#1a1a1a] transition-all group shadow-xl">
+            <section className="space-y-6">
+              <div className="bg-[#18191b] rounded-[16px] p-6 flex items-center justify-between border border-white/5 mt-8 hover:bg-white/5 transition-all group shadow-xl">
                 <div className="flex items-center gap-6">
-                  <div className="w-14 h-14 rounded-2xl bg-[#009de0]/10 flex items-center justify-center text-[#009de0] group-hover:scale-110 transition-all">
-                    <MessageSquare size={32} />
+                  <div className="w-12 h-12 rounded-xl bg-[#009de0]/10 flex items-center justify-center text-[#009de0] group-hover:scale-110 transition-all">
+                    <MessageSquare size={24} />
                   </div>
                   <div className="flex-1">
-                    <h4 className="text-white font-black text-xl">
-                      Add comment for venue
+                    <h4 className="text-white font-bold text-lg">
+                      {checkout.addVenueComment}
                     </h4>
-                    <p className="text-gray-500 text-sm font-medium mt-1 leading-relaxed max-w-[340px]">
-                      Special requests, allergies, or any context for the
-                      chef...
+                    <p className="text-white/40 text-sm font-medium mt-1 leading-relaxed max-w-[340px]">
+                      {venueComment || checkout.venueCommentPlaceholder}
                     </p>
                   </div>
                 </div>
-                <button className="bg-[#25353d] text-[#009de0] px-8 py-3.5 rounded-2xl font-black text-sm hover:bg-[#2c424d] transition-all shadow-lg active:scale-95">
-                  Edit
+                <button 
+                  onClick={() => {
+                    setTempComment(venueComment);
+                    setIsCommentModalOpen(true);
+                  }}
+                  className="bg-white/10 text-[#009de0] px-6 py-2 rounded-xl font-bold text-sm hover:bg-white/20 transition-all border border-white/5"
+                >
+                  {venueComment ? checkout.edit : checkout.add}
                 </button>
               </div>
             </section>
 
-            <section className="space-y-8">
-              <h2 className="text-[36px] font-black tracking-tight">Payment</h2>
-              <button className="w-full bg-[#141414] hover:bg-[#1a1a1a] rounded-[36px] p-8 flex items-center justify-between border border-white/5 transition-all group shadow-2xl">
-                <div className="flex items-center gap-6">
-                  <div className="w-16 h-16 bg-[#009de0]/10 rounded-2xl flex items-center justify-center text-[#009de0] group-hover:scale-110 transition-all">
-                    <CreditCard size={32} />
+            <section className="space-y-6">
+              <h2 className="text-[20px] font-black tracking-tight text-white">{checkout.payment}</h2>
+              <div className="bg-[#18191b] rounded-[16px] border border-white/5 divide-y divide-white/5">
+                <button 
+                  onClick={() => setIsPaymentModalOpen(true)} 
+                  className="w-full p-4 flex items-center justify-between hover:bg-white/5 transition-colors group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="text-white opacity-60">
+                      <CreditCard size={22} />
+                    </div>
+                    <div className="text-left">
+                      <span className="text-white font-bold text-sm block">
+                        {paymentMethod === 'card' ? checkout.card : paymentMethod === 'cash' ? checkout.cash : checkout.credits}
+                      </span>
+                      <span className="text-white/40 text-xs font-bold">{checkout.tapToChangePayment}</span>
+                    </div>
                   </div>
-                  <div className="text-left">
-                    <h4 className="text-white font-black text-2xl tracking-tight">
-                      Choose a payment method
-                    </h4>
-                    <p className="text-gray-500 font-medium mt-1">
-                      Please add a payment method to continue
-                    </p>
-                  </div>
-                </div>
-                <ChevronRight className="text-gray-600 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </section>
+                  <ChevronRight size={18} className="text-white/20" />
+                </button>
 
-            <section className="space-y-8">
-              <div className="flex items-center justify-between">
-                <h2 className="text-[36px] font-black tracking-tight">
-                  Add courier tip
-                </h2>
-                <div className="bg-[#009de0]/10 text-[#009de0] px-5 py-2 rounded-xl text-xs font-black uppercase tracking-[0.1em]">
-                  Optional
+                <div className="p-4 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="text-white opacity-60">
+                      <Ticket size={22} />
+                    </div>
+                    <input 
+                       type="text" 
+                       placeholder={checkout.promoPlaceholder}
+                       value={promoCode}
+                       onChange={(e) => setPromoCode(e.target.value)}
+                       className="bg-transparent text-white font-bold text-sm outline-none w-full placeholder:text-white/40"
+                    />
+                  </div>
+                  <button 
+                    onClick={() => {
+                        if (promoCode.toUpperCase().startsWith('WOLT')) {
+                            setPromoDiscount(5);
+                            alert("Promo code applied! 5 AZN discount.");
+                        } else {
+                            alert("Invalid promo code.");
+                        }
+                    }}
+                    className="bg-[#009de0] hover:bg-[#0088c2] text-white px-6 py-2 rounded-lg font-bold text-sm transition-all"
+                  >
+                    {checkout.submit}
+                  </button>
                 </div>
               </div>
-              <div className="bg-[#141414] rounded-[36px] p-10 border border-white/5 shadow-2xl">
-                <p className="text-gray-400 font-medium mb-10 text-xl leading-relaxed">
-                  They&apos;ll get 100% of your tip after the delivery.
+            </section>
+
+            <section className="space-y-6">
+              <h2 className="text-[20px] font-black tracking-tight text-white">{checkout.addCourierTip}</h2>
+              <div className="bg-[#18191b] rounded-[16px] p-6 border border-white/5">
+                <p className="text-white/40 text-sm font-medium mb-6">
+                  {checkout.tipDesc}
                 </p>
-                <div className="flex flex-wrap gap-3">
-                  {[0, 1, 2, 3].map((amount) => (
+                <div className="flex gap-2">
+                   {[0, 1, 2, 3].map((amount) => (
                     <button
                       key={amount}
                       onClick={() => setTip(amount)}
-                      className={`px-6 py-3 rounded-[16px] font-black text-base transition-all duration-300 ${
+                      className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${
                         tip === amount
-                          ? "bg-[#009de0] text-white shadow-[0_0_20px_rgba(0,157,224,0.4)] scale-105"
-                          : "bg-[#1f1f1f] text-gray-300 hover:bg-[#2a2a2a] border border-white/5"
+                          ? "bg-[#009de0] text-white"
+                          : "bg-white/5 text-white/60 hover:bg-white/10"
                       }`}
                     >
                       AZN {amount}
                     </button>
                   ))}
-                  <button className="px-6 py-3 rounded-[16px] bg-[#1f1f1f] text-gray-300 font-black text-base border border-white/5 hover:bg-[#2a2a2a] transition-all">
-                    Other
+                  <button className="flex-1 py-3 bg-white/5 text-white/60 rounded-xl font-bold text-sm hover:bg-white/10">
+                    {checkout.other}
                   </button>
                 </div>
-              </div>
-            </section>
-
-            <section className="space-y-8">
-              <h2 className="text-[36px] font-black tracking-tight">
-                Redeem code
-              </h2>
-              <div className="flex gap-5">
-                <div className="flex-1 relative group">
-                  <Ticket
-                    className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-[#009de0] transition-colors"
-                    size={20}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Enter code..."
-                    className="w-full bg-[#141414] border border-white/5 outline-none rounded-[24px] py-4 pl-14 pr-6 font-bold text-lg focus:border-[#009de0]/50 transition-all placeholder:text-gray-800 shadow-inner"
-                  />
-                </div>
-                <button className="bg-[#009de0] hover:bg-[#00b0ff] text-white px-8 rounded-[24px] font-black text-base shadow-xl shadow-[#009de0]/20 active:scale-95 transition-all">
-                  Submit
-                </button>
               </div>
             </section>
           </div>
 
-          {/* Right Column: Sticky Summary Sidebar */}
-          <aside className="w-full lg:w-[420px] shrink-0">
-            <div className="sticky top-24 space-y-8">
-              {/* Wolt+ Promo Banner */}
-              <div className="bg-gradient-to-br from-[#4e31aa] via-[#8c52ff] to-[#4e31aa] rounded-[36px] p-10 relative overflow-hidden group shadow-[0_20px_50px_rgba(140,82,255,0.3)]">
-                <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 blur-[80px] -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-1000" />
-                <div className="relative z-10">
-                  <div className="flex items-center gap-2.5 mb-5">
-                    <span className="bg-white text-[#4e31aa] px-4 py-1.5 rounded-xl text-[11px] font-black italic tracking-tighter shadow-xl">
-                      Wolt+
-                    </span>
-                    <span className="text-white font-bold text-sm tracking-tight">
-                      Only with Wolt+
-                    </span>
+          <aside className="w-full lg:w-[380px] shrink-0">
+            <div className="sticky top-10 space-y-4">
+              <div className="bg-[#18191b] rounded-[16px] p-6 border border-white/5 shadow-2xl">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-black text-white">{checkout.summary}</h3>
+                  <span className="text-white/20 text-xs font-bold uppercase">{checkout.inclTaxes}</span>
+                </div>
+
+                <div className="space-y-4 text-sm font-bold">
+                  <button className="text-[#009de0] hover:underline mb-2 block text-left">{checkout.howFeesWork} </button>
+                  
+                  <div className="flex justify-between text-white/60">
+                    <span>{checkout.subtotal}</span>
+                    <span className="text-white">AZN {totalAmount.toFixed(2)}</span>
                   </div>
-                  <h3 className="text-white text-[28px] font-black leading-[1.2] mb-3 tracking-tight">
-                    Only with Wolt+ get AZN 0.00 delivery fee
-                  </h3>
-                  <p className="text-white/70 text-base font-medium mb-8 leading-relaxed">
-                    Start your 30-day free trial today and save on every order.
-                  </p>
-                  <button className="w-full bg-white text-[#4e31aa] py-5 rounded-2xl font-black text-[20px] hover:shadow-2xl hover:scale-[1.02] transition-all active:scale-95">
-                    Start saving now
-                  </button>
+                  <div className="flex justify-between text-white/60">
+                    <span>{checkout.bagFee}</span>
+                    <span className="text-white">AZN {bagFee.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-white/60">
+                    <span>{checkout.serviceFee}</span>
+                    <span className="text-white">AZN {serviceFee.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-white/60">
+                    <span>{checkout.deliveryFee}</span>
+                    <span className="text-white">AZN {deliveryFee.toFixed(2)}</span>
+                  </div>
+                  
+                  <div className="pt-4 border-t border-white/5 flex justify-between items-baseline">
+                    <span className="text-2xl font-black text-white">{checkout.total}</span>
+                    <span className="text-2xl font-black text-white">AZN {(totalAmount + bagFee + serviceFee + deliveryFee + (tip || 0) - promoDiscount).toFixed(2)}</span>
+                  </div>
+                </div>
+
+                <div className="mt-8 bg-gradient-to-br from-[#4e31aa] to-[#8c52ff] rounded-[12px] p-4 relative overflow-hidden group">
+                   <div className="flex items-center gap-2 mb-3">
+                      <div className="bg-white/10 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-black text-white italic">Wolt+</div>
+                      <span className="text-white/60 text-[10px] font-bold">{checkout.onlyWithWoltPlus}</span>
+                      <span className="ml-auto text-white/40 text-[10px] font-bold line-through">AZN {(totalAmount + bagFee + serviceFee + deliveryFee + (tip || 0)).toFixed(2)}</span>
+                      <span className="text-white text-[10px] font-bold">AZN {(totalAmount + bagFee + serviceFee + (tip || 0)).toFixed(2)}</span>
+                   </div>
+                   <p className="text-white text-[11px] font-medium leading-relaxed mb-4">
+                     {checkout.woltPlusPromo} <br/>
+                     <button className="underline opacity-60">{checkout.learnMore}</button>
+                   </p>
+                   <button className="w-full bg-white/10 hover:bg-white/20 text-white py-2.5 rounded-lg font-black text-xs transition-all">
+                     {checkout.startSaving}
+                   </button>
+                </div>
+
+                <div className="mt-6">
+                   <button 
+                     disabled={loading}
+                     onClick={async () => {
+                        if (!currentAddress) {
+                            alert(checkout.selectAddressError);
+                            setIsLocationModalOpen(true);
+                            return;
+                        }
+                        setLoading(true);
+                        await placeOrder(router, venueComment, paymentMethod, {
+                            tip: tip || 0,
+                            deliveryMode,
+                            deliveryTimeType: deliveryTimeOption,
+                            isGift,
+                            courierNote,
+                            deliveryAddress: currentAddress?.details
+                        });
+                        setLoading(false);
+                     }}
+                     className="w-full bg-[#009de0] hover:bg-[#00b0ff] disabled:bg-[#009de0] disabled:opacity-100 text-white p-4 rounded-xl font-black text-sm transition-all shadow-lg flex flex-col items-center gap-1"
+                   >
+                     {!paymentMethod ? (
+                        <>
+                          <span>{checkout.pleaseAddPayment}</span>
+                          <span>{checkout.continueWithOrder}</span>
+                        </>
+                     ) : (
+                        <span>{checkout.finishOrder}</span>
+                     )}
+                   </button>
                 </div>
               </div>
-
-              <div className="bg-[#141414] rounded-[36px] p-10 border border-white/10 shadow-2xl space-y-10">
-                <div className="flex items-center justify-between pb-6 border-b border-white/5">
-                  <h3 className="text-[32px] font-black tracking-tight">
-                    Summary
-                  </h3>
-                  <button className="text-gray-600 hover:text-white transition-colors bg-white/5 p-2 rounded-xl">
-                    <Info size={24} />
-                  </button>
-                </div>
-
-                <div className="space-y-5">
-                  <div className="flex justify-between text-gray-400 font-bold text-xl">
-                    <span>Item subtotal</span>
-                    <span className="text-white tracking-tight">
-                      AZN {totalAmount.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-gray-400 font-bold text-xl">
-                    <span>Bag fee</span>
-                    <span className="text-white tracking-tight">
-                      AZN {bagFee.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-gray-400 font-bold text-xl">
-                    <span>Service fee</span>
-                    <span className="text-white tracking-tight">
-                      AZN {serviceFee.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-gray-400 font-bold text-xl">
-                    <span>Delivery fee</span>
-                    <span className="text-white tracking-tight">
-                      AZN {deliveryFee.toFixed(2)}
-                    </span>
-                  </div>
-                  {tip !== null && tip > 0 && (
-                    <div className="flex justify-between text-[#009de0] font-black text-xl animate-in fade-in slide-in-from-bottom-2">
-                      <span>Courier tip</span>
-                      <span className="tracking-tight">
-                        AZN {tip.toFixed(2)}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="pt-10 border-t border-white/10 flex justify-between items-baseline gap-4">
-                  <span className="text-[36px] font-black tracking-tight leading-none">
-                    Total
-                  </span>
-                  <div className="text-right">
-                    <span className="text-[48px] font-black text-[#009de0] tracking-tighter block leading-none">
-                      AZN {finalTotal.toFixed(2)}
-                    </span>
-                    <span className="text-gray-700 text-[10px] font-black uppercase tracking-[0.2em] mt-3 block">
-                      Incl. taxes if applicable
-                    </span>
-                  </div>
-                </div>
-
-                <div className="pt-6 space-y-8">
-                  <div className="bg-[#bf1a2f]/10 border border-[#bf1a2f]/30 p-6 rounded-3xl flex items-start gap-5 shadow-inner">
-                    <div className="w-10 h-10 bg-[#bf1a2f] rounded-full flex items-center justify-center shrink-0 shadow-lg shadow-[#bf1a2f]/20">
-                      <Info size={20} className="text-white" />
-                    </div>
-                    <p className="text-[#ff4d6d] text-base font-black leading-snug tracking-tight">
-                      Please add a payment method to complete your order.
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={placeOrder}
-                    className="w-full bg-[#009de0] hover:bg-[#00b0ff] text-white h-[64px] rounded-[20px] font-black text-[18px] tracking-tight transition-all shadow-2xl shadow-[#009de0]/20 active:scale-95"
-                  >
-                    Finish order
-                  </button>
-                </div>
-              </div>
-
-              <p className="px-6 text-[12px] text-gray-700 font-bold leading-relaxed text-center tracking-tight">
-                By clicking &quot;Finish order&quot; you agree to the{" "}
-                <span className="underline text-gray-500 cursor-pointer hover:text-white transition-colors">
-                  Terms and Conditions
-                </span>{" "}
-                and the{" "}
-                <span className="underline text-gray-500 cursor-pointer hover:text-white transition-colors">
-                  Privacy Policy
-                </span>
-                .
-              </p>
             </div>
           </aside>
         </div>
       </div>
+
+      {/* Global Location Modal */}
+      <LocationModal 
+        isOpen={isLocationModalOpen}
+        onClose={() => setIsLocationModalOpen(false)}
+        onSelectLocation={() => {}} 
+      />
+
+      {/* Payment Method Modal */}
+      {isPaymentModalOpen && (
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsPaymentModalOpen(false)} />
+          <div className="relative bg-[#202125] w-full max-w-[400px] rounded-[32px] p-8 border border-white/5 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <h3 className="text-2xl font-black mb-6 text-white tracking-tight">{checkout.paymentMethod}</h3>
+            <div className="space-y-3">
+              {[
+                { id: 'card', name: checkout.card, icon: <CreditCard size={18} /> },
+                { id: 'cash', name: checkout.cash, icon: <div className="text-xl">💵</div> },
+                { id: 'credit', name: checkout.credits, icon: <div className="text-xl">💰</div>, badge: `AZN ${user?.credit?.toFixed(2) || '0.00'}` }
+              ].map((method) => (
+                <button
+                  key={method.id}
+                  onClick={() => {
+                    setPaymentMethod(method.id as any);
+                    setIsPaymentModalOpen(false);
+                  }}
+                  className={`w-full p-4 rounded-2xl border flex items-center justify-between transition-all ${
+                    paymentMethod === method.id ? 'bg-[#009de0]/10 border-[#009de0]' : 'bg-white/5 border-white/5 hover:bg-white/10'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={paymentMethod === method.id ? 'text-[#009de0]' : 'text-white/60'}>
+                      {method.icon}
+                    </div>
+                    <div className="text-left">
+                      <span className="text-white font-bold text-sm block">{method.name}</span>
+                      {method.badge && <span className="text-[#009de0] text-xs font-black">{method.badge}</span>}
+                    </div>
+                  </div>
+                  {paymentMethod === method.id && <Check size={18} className="text-[#009de0]" />}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Courier Note Modal */}
+      {isNoteModalOpen && (
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsNoteModalOpen(false)} />
+          <div className="relative bg-[#202125] w-full max-w-[500px] rounded-[32px] p-8 border border-white/5 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <h3 className="text-2xl font-black mb-6 text-white tracking-tight">{checkout.noteForCourier}</h3>
+            <textarea
+              className="w-full h-40 bg-white/5 border border-white/5 rounded-2xl p-4 text-white font-medium outline-none focus:border-[#009de0]/50 transition-all resize-none mb-6"
+              placeholder={checkout.notePlaceholder}
+              value={tempNote}
+              onChange={(e) => setTempNote(e.target.value)}
+              autoFocus
+            />
+            <div className="flex gap-4">
+              <button 
+                onClick={() => setIsNoteModalOpen(false)} 
+                className="flex-1 py-4 rounded-xl font-bold bg-white/5 text-white"
+              >
+                {checkout.cancel}
+              </button>
+              <button 
+                onClick={() => {
+                  setCourierNote(tempNote);
+                  setIsNoteModalOpen(false);
+                }}
+                className="flex-1 py-4 rounded-xl font-bold bg-[#009de0] text-white shadow-xl shadow-[#009de0]/20"
+              >
+                {checkout.saveNote}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Comment Modal for Venue */}
+      {isCommentModalOpen && (
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsCommentModalOpen(false)} />
+          <div className="relative bg-[#202125] w-full max-w-[500px] rounded-[32px] p-8 border border-white/5 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <h3 className="text-2xl font-black mb-6 text-white tracking-tight">{checkout.addVenueComment}</h3>
+            <textarea
+              className="w-full h-40 bg-white/5 border border-white/5 rounded-2xl p-4 text-white font-medium outline-none focus:border-[#009de0]/50 transition-all resize-none mb-6"
+              placeholder={checkout.venueCommentPlaceholder}
+              value={tempComment}
+              onChange={(e) => setTempComment(e.target.value)}
+              autoFocus
+            />
+            <div className="flex gap-4">
+              <button 
+                onClick={() => setIsCommentModalOpen(false)} 
+                className="flex-1 py-4 rounded-xl font-bold bg-white/5 text-white"
+              >
+                {checkout.cancel}
+              </button>
+              <button 
+                onClick={() => {
+                  setVenueComment(tempComment);
+                  setIsCommentModalOpen(false);
+                }}
+                className="flex-1 py-4 rounded-xl font-bold bg-[#009de0] text-white shadow-xl shadow-[#009de0]/20"
+              >
+                {checkout.saveComment}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { RestaurantsService } from './restaurants.service';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 
@@ -14,6 +14,11 @@ export class RestaurantsController {
   @Get()
   findAll() {
     return this.restaurantsService.findAll();
+  }
+
+  @Get('search')
+  search(@Query('q') query: string) {
+    return this.restaurantsService.search(query);
   }
 
   @Get(':id')

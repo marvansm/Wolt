@@ -3,8 +3,8 @@
 import { useRef, useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, ShoppingCart } from "lucide-react";
 import StoreCard from "@/components/common/StoreCard";
-import Link from "next/image";
 import { Store } from "@/types/global";
+import { useIntlayer } from "react-intlayer";
 
 interface PopularStoresSectionProps {
     stores: Store[];
@@ -12,6 +12,7 @@ interface PopularStoresSectionProps {
 }
 
 export default function PopularStoresSection({ stores, isLoading }: PopularStoresSectionProps) {
+    const discovery = useIntlayer("discovery");
     const scrollRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
@@ -41,14 +42,14 @@ export default function PopularStoresSection({ stores, isLoading }: PopularStore
     if (!isLoading && stores.length === 0) return null;
 
     return (
-        <section className="w-full bg-black py-8">
+        <section className="w-full bg-background py-8 transition-colors duration-300">
             <div className="max-w-[1920px] w-full mx-auto px-[32px]">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
-                        <h2 className="text-white text-[24px] font-bold">
-                            Popular stores
+                        <h2 className="text-foreground text-[24px] font-bold">
+                            {discovery.sections.popularStores as any}
                         </h2>
-                        <ShoppingCart className="text-white" size={24} />
+                        <ShoppingCart className="text-foreground" size={24} />
                     </div>
                     
                     <div className="flex gap-2">
@@ -56,8 +57,8 @@ export default function PopularStoresSection({ stores, isLoading }: PopularStore
                             onClick={() => scroll("left")}
                             disabled={!canScrollLeft}
                             className={`w-[40px] h-[40px] rounded-full flex items-center justify-center transition-all duration-300 ${canScrollLeft
-                                ? "bg-[#1f1f1f] text-white hover:bg-[#2b2b2b]"
-                                : "bg-[#141414] text-[#404040] cursor-not-allowed"
+                                ? "bg-secondary text-foreground hover:brightness-110"
+                                : "bg-muted/50 text-foreground/20 cursor-not-allowed"
                                 }`}
                         >
                             <ChevronLeft size={24} />
@@ -66,8 +67,8 @@ export default function PopularStoresSection({ stores, isLoading }: PopularStore
                             onClick={() => scroll("right")}
                             disabled={!canScrollRight}
                             className={`w-[40px] h-[40px] rounded-full flex items-center justify-center transition-all duration-300 ${canScrollRight
-                                ? "bg-[#1f1f1f] text-white hover:bg-[#2b2b2b]"
-                                : "bg-[#141414] text-[#404040] cursor-not-allowed"
+                                ? "bg-secondary text-foreground hover:brightness-110"
+                                : "bg-muted/50 text-foreground/20 cursor-not-allowed"
                                 }`}
                         >
                             <ChevronRight size={24} />
@@ -82,7 +83,7 @@ export default function PopularStoresSection({ stores, isLoading }: PopularStore
                 >
                     {isLoading ? (
                         Array.from({ length: 5 }).map((_, idx) => (
-                            <div key={idx} className="min-w-[200px] w-[200px] h-[250px] bg-[#141414] rounded-2xl animate-pulse" />
+                            <div key={idx} className="min-w-[200px] w-[200px] h-[250px] bg-secondary rounded-2xl animate-pulse" />
                         ))
                     ) : (
                         stores.map((store) => (

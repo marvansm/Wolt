@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { StoresService } from './stores.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 
@@ -14,6 +14,11 @@ export class StoresController {
   @Get()
   findAll() {
     return this.storesService.findAll();
+  }
+
+  @Get('search')
+  search(@Query('q') query: string) {
+    return this.storesService.search(query);
   }
 
   @Get(':id')

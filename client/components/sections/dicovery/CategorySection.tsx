@@ -3,12 +3,32 @@
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useQuery } from "@/providers/TanstackQueryProvider";
 import api from "@/services/api";
 import ImageCard from "@/components/common/ImageCard";
+import ApiLoading from "@/components/common/ApiLoading";
+import { useIntlayer } from "react-intlayer";
 
 export default function CategorySection() {
+  const discovery = useIntlayer("discovery");
   const [isExpanded, setIsExpanded] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  
+  const activeCategory = searchParams.get("category");
+
+  const handleCategoryClick = (categoryName: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (activeCategory === categoryName) {
+      params.delete("category");
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    } else {
+      params.set("category", categoryName);
+      router.push(`${pathname}?${params.toString()}#discovery-results`, { scroll: true });
+    }
+  };
 
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ["categories"],
@@ -28,19 +48,26 @@ export default function CategorySection() {
   };
 
   return (
-    <section className="w-full bg-black py-8 transition-all duration-300">
+    <section className="w-full bg-background py-8 transition-all duration-300">
       <div className="max-w-[1920px] w-full mx-auto px-[32px] ">
         <div className="flex flex-col">
           <div className="flex items-start gap-4 overflow-x-auto no-scrollbar pb-2">
             {isLoading ? (
-              <div className="text-[#737373] py-4">Loading categories...</div>
+              <div className="w-full flex justify-center py-4">
+                <ApiLoading text={discovery.ui.loadingCategories as any} />
+              </div>
             ) : firstRow.map((category: any, index: number) => (
               <div
-                key={category._id}
-                className="flex flex-col items-center gap-3 min-w-[100px] group cursor-pointer"
+                key={category.id || category._id || index}
+                onClick={() => handleCategoryClick(category.name)}
+                className={`flex flex-col items-center gap-3 min-w-[100px] group cursor-pointer ${
+                  activeCategory === category.name ? "opacity-100 scale-105" : "hover:opacity-100"
+                }`}
               >
                 <div
-                  className={`w-[150px] h-[100px] ${getBgColor(index)} rounded-[24px] flex items-center justify-center transition-transform duration-300 group-hover:scale-105 overflow-hidden relative`}
+                  className={`w-[150px] h-[100px] ${getBgColor(index)} rounded-[24px] flex items-center justify-center transition-all duration-300 group-hover:scale-105 overflow-hidden relative ${
+                    activeCategory === category.name ? "ring-4 ring-[#009de0] shadow-lg shadow-[#009de0]/50" : ""
+                  }`}
                 >
                   {category.image && (
                     <img
@@ -51,7 +78,7 @@ export default function CategorySection() {
                     />
                   )}
                 </div>
-                <span className="text-white text-[12px] font-semibold text-center leading-tight max-w-[90px] font-poppins">
+                <span className="text-foreground text-[12px] font-semibold text-center leading-tight max-w-[90px] font-poppins">
                   {category.name}
                 </span>
               </div>
@@ -62,7 +89,7 @@ export default function CategorySection() {
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="flex flex-col items-center gap-3 min-w-[100px] group cursor-pointer"
               >
-                <div className="w-[100px] h-[100px] bg-[#1f1f1f] rounded-[24px] flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
+                <div className="w-[100px] h-[100px] bg-secondary rounded-[24px] flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
                   <ChevronDown
                     className={`text-[#009de0] transition-transform duration-500 ${isExpanded ? "rotate-180" : ""}`}
                     size={32}
@@ -84,11 +111,16 @@ export default function CategorySection() {
               >
                 {secondRow.map((category: any, index: number) => (
                   <div
-                    key={category._id}
-                    className="flex flex-col items-center gap-3 min-w-[100px] group cursor-pointer"
+                    key={category.id || category._id || index}
+                    onClick={() => handleCategoryClick(category.name)}
+                    className={`flex flex-col items-center gap-3 min-w-[100px] group cursor-pointer ${
+                      activeCategory === category.name ? "opacity-100 scale-105" : "hover:opacity-100"
+                    }`}
                   >
                     <div
-                      className={`w-[100px] h-[100px] ${getBgColor(index + 10)} rounded-[24px] flex items-center justify-center transition-transform duration-300 group-hover:scale-105 overflow-hidden relative`}
+                      className={`w-[100px] h-[100px] ${getBgColor(index + 10)} rounded-[24px] flex items-center justify-center transition-all duration-300 group-hover:scale-105 overflow-hidden relative ${
+                        activeCategory === category.name ? "ring-4 ring-[#009de0] shadow-lg shadow-[#009de0]/50" : ""
+                      }`}
                     >
                       {category.image && (
                         <img
@@ -99,7 +131,7 @@ export default function CategorySection() {
                         />
                       )}
                     </div>
-                    <span className="text-white text-[12px] font-semibold text-center leading-tight max-w-[90px] font-poppins">
+                    <span className="text-foreground text-[12px] font-semibold text-center leading-tight max-w-[90px] font-poppins">
                       {category.name}
                     </span>
                   </div>

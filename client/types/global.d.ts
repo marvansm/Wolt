@@ -63,18 +63,36 @@ export interface StoreSidebarProps {
 }
 
 export interface User {
+    id?: string;
+    _id?: string;
     email: string;
     firstName: string;
     lastName: string;
     country?: string;
     phoneNumber?: string;
+    avatar?: string;
+    isEmailVerified?: boolean;
+    isPhoneVerified?: boolean;
+    isWoltPlus?: boolean;
+    woltPlusExpiresAt?: string;
+    credit?: number;
 }
 
 export interface AuthContextType {
     user: User | null;
     isLoggedIn: boolean;
-    login: (email: string) => Promise<void>;
-    signup: (userData: any) => Promise<void>;
+    login: (email: string, password?: string) => Promise<void>;
+    loginWithSocial: (data: any) => Promise<void>;
+    loginWithToken: (token: string, user: any) => void;
+    signup: (userData: any) => Promise<any>;
+    verifyEmail: (email: string, code: string) => Promise<void>;
+    resendCode: (email: string) => Promise<void>;
+    changeEmail: (oldEmail: string, newEmail: string) => Promise<any>;
+    forgotPassword: (email: string) => Promise<any>;
+    resetPassword: (data: any) => Promise<any>;
+    updateProfile: (data: any) => Promise<any>;
+    requestProfileVerification: (method: 'email' | 'phone') => Promise<any>;
+    verifyProfileMethod: (method: 'email' | 'phone', code: string) => Promise<any>;
     logout: () => void;
 }
 
@@ -136,6 +154,9 @@ export interface CartItem {
     storeImage?: string;
     deliveryTime?: string;
     storeType?: 'restaurant' | 'store';
+    description?: string;
+    latitude?: number;
+    longitude?: number;
 }
 
 export interface Order {
@@ -144,20 +165,52 @@ export interface Order {
     total: number;
     date: string;
     storeId: string;
+    storeName: string;
+    storeImage?: string;
+    deliveryAddress?: string;
+    status: 'received' | 'seen' | 'preparing' | 'ready' | 'delivered';
+    storeLocation?: { lat: number, lng: number };
+    deliveryLocation?: { lat: number, lng: number };
+    paymentMethod?: string;
+}
+
+export interface SelectedAddress {
+    details: string;
+    lat: number;
+    lng: number;
+    name?: string;
+    id?: string;
 }
 
 export interface CartContextType {
     items: CartItem[];
     orders: Order[];
+    currentAddress: SelectedAddress | null;
+    setCurrentAddress: (address: SelectedAddress) => void;
     addToCart: (product: any, store: any) => void;
     removeFromCart: (productId: string) => void;
     updateQuantity: (productId: string, quantity: number) => void;
     clearCart: () => void;
-    placeOrder: () => void;
+    placeOrder: (
+        router?: any, 
+        venueComment?: string, 
+        paymentMethod?: string,
+        metadata?: {
+            tip?: number;
+            deliveryMode?: string;
+            deliveryTimeType?: string;
+            isGift?: boolean;
+            courierNote?: string;
+            deliveryAddress?: string;
+        }
+    ) => Promise<void>;
+    updateOrderStatus: (orderId: string, newStatus: Order['status']) => void;
     totalAmount: number;
     itemCount: number;
     isCartOpen: boolean;
     setIsCartOpen: (isOpen: boolean) => void;
     cartViewMode: 'basket' | 'order';
     setCartViewMode: (mode: 'basket' | 'order') => void;
+    venueComment: string;
+    setVenueComment: (comment: string) => void;
 }

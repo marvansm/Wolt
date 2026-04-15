@@ -1,0 +1,58 @@
+/* eslint-disable */
+export default {
+  "key": "discovery",
+  "content": {
+    "nodeType": "translation",
+    "translation": {
+      "en": {
+        "tabs": {
+          "discovery": "Discovery",
+          "restaurants": "Restaurants",
+          "stores": "Stores"
+        },
+        "sections": {
+          "orderAgain": "Order again",
+          "ramadan": "Discounted offers for Ramadan",
+          "featured": "Featured on Wolt",
+          "burgers": "Burgers",
+          "chicken": "Fried chicken",
+          "fastest": "Fastest delivery",
+          "popularStores": "Popular stores"
+        },
+        "ui": {
+          "seeAll": "See all",
+          "loading": "Loading...",
+          "loadingCategories": "Loading categories...",
+          "noRestaurants": "No restaurants found for",
+          "restaurantsSuffix": "Restaurants"
+        }
+      },
+      "tr": {
+        "tabs": {
+          "discovery": "Keşfet",
+          "restaurants": "Restoranlar",
+          "stores": "Mağazalar"
+        },
+        "sections": {
+          "orderAgain": "Tekrar sipariş ver",
+          "ramadan": "Ramazan için indirimli teklifler",
+          "featured": "Wolt'ta öne çıkanlar",
+          "burgers": "Burgerler",
+          "chicken": "Kızarmış tavuk",
+          "fastest": "En hızlı teslimat",
+          "popularStores": "Popüler mağazalar"
+        },
+        "ui": {
+          "seeAll": "Hepsini gör",
+          "loading": "Yükleniyor...",
+          "loadingCategories": "Kategoriler yükleniyor...",
+          "noRestaurants": "Şunun için restoran bulunamadı:",
+          "restaurantsSuffix": "Restoranları"
+        }
+      }
+    }
+  },
+  "localIds": [
+    "discovery::local::components\\View\\main\\discoveryView\\discovery.content.ts"
+  ]
+} as const;

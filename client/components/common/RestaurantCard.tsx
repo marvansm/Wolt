@@ -10,11 +10,11 @@ interface RestaurantCardProps {
 }
 
 export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
-    const storeId = restaurant._id || restaurant.id;
+    const storeNameSlug = restaurant.name.replace(/\s+/g, '-').toLowerCase();
     return (
-        <Link href={`/store/${storeId}`} className="block">
+        <Link href={`/store/${storeNameSlug}`} className="block">
             <div className="flex flex-col gap-3 min-w-[320px] max-w-[320px] group cursor-pointer">
-                <div className="relative w-full h-[180px] rounded-[16px] overflow-hidden bg-[#1f1f1f]">
+                <div className="relative w-full h-[180px] rounded-[16px] overflow-hidden bg-muted">
                 <Image
                     src={restaurant.image}
                     alt={restaurant.name}
@@ -32,18 +32,18 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
             <div className="flex flex-col gap-1 px-1">
                 <div className="flex justify-between items-start">
                     <div className="flex flex-col">
-                        <h3 className="text-white text-[16px] font-bold leading-tight">
+                        <h3 className="text-foreground text-[16px] font-bold leading-tight">
                             {restaurant.name}
                         </h3>
-                        <p className="text-[#a3a3a3] text-[13px] line-clamp-1">
+                        <p className="text-muted-foreground text-[13px] line-clamp-1">
                             {restaurant.description}
                         </p>
                     </div>
-                    <div className="bg-[#1f1f1f] px-2 py-1 rounded-lg flex flex-col items-center justify-center min-w-[50px]">
+                    <div className="bg-secondary px-2 py-1 rounded-lg flex flex-col items-center justify-center min-w-[50px]">
                         <span className="text-[#009de0] text-[12px] font-bold leading-tight">
                             {restaurant.deliveryTime}
                         </span>
-                        <span className="text-[#737373] text-[10px] uppercase font-bold">
+                        <span className="text-muted-foreground/70 text-[10px] uppercase font-bold">
                             min
                         </span>
                     </div>
@@ -56,14 +56,14 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
                             AZN {restaurant.deliveryFee}
                         </span>
                     </div>
-                    <span className="text-[#737373] text-[12px]">•</span>
-                    <span className="text-[#737373] text-[12px] font-medium">
+                    <span className="text-muted-foreground text-[12px]">•</span>
+                    <span className="text-muted-foreground text-[12px] font-medium">
                         {restaurant.priceRange}
                     </span>
-                    <span className="text-[#737373] text-[12px]">•</span>
+                    <span className="text-muted-foreground text-[12px]">•</span>
                     <div className="flex items-center gap-1">
-                        <Star className="text-white bg-[#1f1f1f] rounded-full p-[2px]" size={14} fill="white" />
-                        <span className="text-white text-[12px] font-bold">
+                        <Star className="text-foreground bg-secondary rounded-full p-[2px]" size={14} fill="currentColor" />
+                        <span className="text-foreground text-[12px] font-bold">
                             {Number(restaurant.rating || 0).toFixed(1)}
                         </span>
                     </div>

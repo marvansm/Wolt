@@ -19,7 +19,7 @@ export default function HeaderWrapper({ children }: { children: ReactNode }) {
     }, []);
 
     return (
-        <header className={`max-w-[1920px] w-full mx-auto px-[32px] py-4 sticky top-0 z-[1000] transition-all duration-300 ${isScrolled ? 'bg-[#242424]' : 'bg-[#000]'}`}>
+        <header className={`max-w-[1920px] w-full mx-auto px-[32px] py-4 sticky top-0 z-[1000] transition-all duration-300 ${isScrolled ? 'bg-white dark:bg-[#242424] shadow-sm dark:shadow-none' : 'bg-white dark:bg-[#000]'}`}>
             {children}
         </header>
     );

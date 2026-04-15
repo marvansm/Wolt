@@ -1,13 +1,18 @@
+"use client";
+
 import { BrandLogosFirstRow, BrandLogosSecondRow } from "@/constant/sections";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Marquee from "react-fast-marquee";
 import Reveal from "../../common/Reveal";
+import { useIntlayer } from "react-intlayer";
 
 export default function BrandSection() {
+  const { brand } = useIntlayer("home");
+
   return (
-    <section className="bg-black">
-      <div className="flex items-center flex-col  gap-6 transform translate-y-[-30px]">
+    <section className="bg-white dark:bg-black transition-colors duration-300">
+      <div className="flex items-center flex-col gap-6 transform translate-y-[-30px]">
         <Reveal direction="left" delay={0.1} className="w-full">
           <Marquee direction="right" speed={15}>
             <div className="flex gap-6">
@@ -45,14 +50,13 @@ export default function BrandSection() {
             text-[14px]
             px-[20px] py-[13px]
             flex gap-[8px] items-center
-            duration-300
             cursor-pointer
-            text-gray-200
+            text-gray-800 dark:text-gray-200 transition-colors duration-300
             font-poppins
             rounded-full
             "
           >
-            Popular around you right now
+            {brand.popular}
             <ChevronRight size={16} strokeWidth={2} />
           </button>
         </Reveal>

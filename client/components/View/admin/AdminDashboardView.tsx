@@ -31,29 +31,6 @@ export default function AdminDashboardView() {
                 <p className="text-[#a3a3a3]">Welcome back to your administration panel.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat) => {
-                    const Icon = stat.icon;
-                    return (
-                        <div key={stat.name} className="bg-[#0a0a0a] border border-[#1f1f1f] p-6 rounded-2xl hover:border-[#009de0] transition-colors duration-300">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className={`p-3 rounded-xl bg-[#1f1f1f] ${stat.color}`}>
-                                    <Icon size={24} />
-                                </div>
-                                <div className="flex items-center gap-1 text-green-500 text-sm font-medium">
-                                    {stat.change}
-                                    <ArrowUpRight size={16} />
-                                </div>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-[#a3a3a3] text-sm font-medium">{stat.name}</p>
-                                <p className="text-2xl font-bold">{stat.value}</p>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-
             <div className="bg-[#0a0a0a] border border-[#1f1f1f] rounded-2xl overflow-hidden">
                 <div className="p-6 border-b border-[#1f1f1f] flex justify-between items-center">
                     <h2 className="text-xl font-bold">Recent Orders</h2>

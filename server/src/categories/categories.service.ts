@@ -1,39 +1,49 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { Category, CategoryDocument } from './entities/category.entity';
 
 @Injectable()
 export class CategoriesService {
-  constructor(@InjectModel(Category.name) private categoryModel: Model<CategoryDocument>) {}
+  constructor(private prisma: PrismaService) {}
 
-  async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
-    const createdCategory = new this.categoryModel(createCategoryDto);
-    return createdCategory.save();
+  async create(createCategoryDto: CreateCategoryDto) {
+    return this.prisma.category.create({
+      data: createCategoryDto as any,
+    });
   }
 
-  async findAll(): Promise<Category[]> {
-    return this.categoryModel.find().exec();
+  async findAll() {
+    return this.prisma.category.findMany();
   }
 
-  async findOne(id: string): Promise<Category> {
-    const category = await this.categoryModel.findById(id).exec();
+  async findOne(id: string) {
+    const category = await this.prisma.category.findUnique({
+      where: { id },
+    });
     if (!category) throw new NotFoundException(`Category with ID ${id} not found`);
     return category;
   }
 
-  async update(id: string, updateCategoryDto: Partial<CreateCategoryDto>): Promise<Category> {
-    const updatedCategory = await this.categoryModel
-      .findByIdAndUpdate(id, updateCategoryDto, { new: true })
-      .exec();
-    if (!updatedCategory) throw new NotFoundException(`Category with ID ${id} not found`);
-    return updatedCategory;
+  async update(id: string, updateCategoryDto: Partial<CreateCategoryDto>) {
+    try {
+      const updatedCategory = await this.prisma.category.update({
+        where: { id },
+        data: updateCategoryDto as any,
+      });
+      return updatedCategory;
+    } catch {
+      throw new NotFoundException(`Category with ID ${id} not found`);
+    }
   }
 
-  async remove(id: string): Promise<Category> {
-    const deletedCategory = await this.categoryModel.findByIdAndDelete(id).exec();
-    if (!deletedCategory) throw new NotFoundException(`Category with ID ${id} not found`);
-    return deletedCategory;
+  async remove(id: string) {
+    try {
+      const deletedCategory = await this.prisma.category.delete({
+        where: { id },
+      });
+      return deletedCategory;
+    } catch {
+      throw new NotFoundException(`Category with ID ${id} not found`);
+    }
   }
 }

@@ -102,7 +102,7 @@ export default function RestaurantsPageView() {
   const handleSave = async () => {
     if (editingRestaurant) {
       updateMutation.mutate({
-        id: editingRestaurant._id,
+        id: editingRestaurant.id || editingRestaurant._id,
         restaurant: formData,
       });
     } else {
@@ -123,6 +123,7 @@ export default function RestaurantsPageView() {
         ...formData.menu,
         {
           name: "",
+          category: "",
           price: 0,
           originalPrice: 0,
           description: "",
@@ -246,7 +247,7 @@ export default function RestaurantsPageView() {
               ) : (
                 restaurants.map((restaurant: any) => (
                   <tr
-                    key={restaurant._id}
+                    key={restaurant.id || restaurant._id}
                     className="hover:bg-[#141414] transition-colors duration-200 group"
                   >
                     <td className="px-6 py-4">
@@ -306,7 +307,7 @@ export default function RestaurantsPageView() {
                           <Edit2 size={18} />
                         </button>
                         <button
-                          onClick={() => handleDelete(restaurant._id)}
+                          onClick={() => handleDelete(restaurant.id || restaurant._id)}
                           className="p-2 hover:bg-[#1f1f1f] rounded-lg text-red-500 transition-colors"
                         >
                           <Trash2 size={18} />
@@ -580,7 +581,7 @@ export default function RestaurantsPageView() {
                           <X size={16} />
                         </button>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                          <div className="col-span-2 space-y-1">
+                          <div className="col-span-1 md:col-span-1 space-y-1">
                             <label className="text-[10px] font-bold text-[#737373] uppercase">
                               Item Name
                             </label>
@@ -589,6 +590,20 @@ export default function RestaurantsPageView() {
                               value={item.name || ""}
                               onChange={(e) =>
                                 updateMenuItem(index, "name", e.target.value)
+                              }
+                              className="w-full bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg px-3 py-2 text-sm"
+                            />
+                          </div>
+                          <div className="col-span-1 md:col-span-1 space-y-1">
+                            <label className="text-[10px] font-bold text-[#737373] uppercase">
+                              Category
+                            </label>
+                            <input
+                              type="text"
+                              value={item.category || ""}
+                              placeholder="e.g. Products"
+                              onChange={(e) =>
+                                updateMenuItem(index, "category", e.target.value)
                               }
                               className="w-full bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg px-3 py-2 text-sm"
                             />

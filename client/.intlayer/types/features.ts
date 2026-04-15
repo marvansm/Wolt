@@ -1,0 +1,184 @@
+/* eslint-disable */
+export default {
+  "key": "features",
+  "content": {
+    "nodeType": "translation",
+    "translation": {
+      "en": {
+        "cart": {
+          "yourOrders": "Your orders",
+          "yourOrder": "Your order",
+          "edit": "Edit",
+          "shoppingCarts": "Shopping carts",
+          "orderAgain": "Order again",
+          "staleVenue": "Venue no longer available",
+          "staleDesc": "This restaurant or store is no longer in our database. Your saved cart is out of date.",
+          "clearStale": "Clear stale cart",
+          "emptyTitle": "Your cart is empty",
+          "emptyDesc": "Add products from your favorite venues!",
+          "deliveryIn": "Delivery in",
+          "min": "min",
+          "itemSubtotal": "Item subtotal",
+          "addMore": "Add more items",
+          "goToCheckout": "Go to checkout",
+          "rate": "Rate",
+          "popular": "Popular",
+          "addComment": "Add comment for venue",
+          "commentDesc": "Special requests, allergies, dietary restrictions, greeting card text...",
+          "add": "Add",
+          "yourNote": "Your note",
+          "recommended": "Recommended for you",
+          "cancel": "Cancel",
+          "save": "Save",
+          "addNotePlaceholder": "E.g. no onions, allergic to..."
+        },
+        "location": {
+          "title": "Add new address",
+          "country": "Country",
+          "streetPlaceholder": "Street name and number",
+          "continue": "Continue",
+          "alertLocatingFailed": "Could not get your location. Please check permissions.",
+          "alertNotSupported": "Geolocation is not supported by your browser."
+        },
+        "search": {
+          "placeholder": "Search in Wolt",
+          "emptyPrompt": "Search for restaurants, stores or items",
+          "restaurantsAndStores": "Restaurants and stores",
+          "relatedItems": "Related items",
+          "seeAll": "See all",
+          "noResults": "No results found for \"{query}\""
+        },
+        "userDropdown": {
+          "loggingOut": "Logging out...",
+          "profile": "Profile",
+          "woltPlusActive": "Active until",
+          "joinWoltPlus": "Join Wolt+ and save",
+          "redeemCode": "Redeem Wolt+ code",
+          "language": "Language",
+          "contactSupport": "Contact Support",
+          "logout": "Log out"
+        },
+        "partnersDropdown": {
+          "title": "Partners",
+          "forCouriers": "For couriers",
+          "forMerchants": "For merchants",
+          "forCompanies": "For companies",
+          "woltDrive": "Wolt Drive"
+        },
+        "theme": {
+          "title": "Theme",
+          "auto": "Auto",
+          "light": "Light",
+          "dark": "Dark",
+          "highContrast": "High Contrast",
+          "done": "Done"
+        },
+        "review": {
+          "title": "Rate this product",
+          "loginPrompt": "Please log in to leave a review",
+          "login": "Login",
+          "howManyStars": "How many stars?",
+          "yourFeedback": "Your feedback",
+          "feedbackPlaceholder": "Tell others what you liked or didn't like...",
+          "postReview": "Post review",
+          "alertSuccess": "Review submitted successfully!",
+          "alertError": "An error occurred while sending the review. Please log in again."
+        },
+        "common": {
+          "sponsored": "Sponsored",
+          "noImage": "No image",
+          "min": "min"
+        }
+      },
+      "tr": {
+        "cart": {
+          "yourOrders": "Siparişleriniz",
+          "yourOrder": "Siparişiniz",
+          "edit": "Düzenle",
+          "shoppingCarts": "Alışveriş sepetleri",
+          "orderAgain": "Tekrar sipariş ver",
+          "staleVenue": "Mekan artık mevcut değil",
+          "staleDesc": "Bu restoran veya mağaza artık veritabanımızda yok. Kayıtlı sepetiniz güncelliğini yitirmiş.",
+          "clearStale": "Eski sepeti temizle",
+          "emptyTitle": "Sepetiniz boş",
+          "emptyDesc": "Favori mekanlarınızdan ürünler ekleyin!",
+          "deliveryIn": "Teslimat:",
+          "min": "dk",
+          "itemSubtotal": "Ürün ara toplamı",
+          "addMore": "Daha fazla ürün ekle",
+          "goToCheckout": "Ödemeye geç",
+          "rate": "Oyla",
+          "popular": "Popüler",
+          "addComment": "Mekan için yorum ekle",
+          "commentDesc": "Özel istekler, alerjiler, diyet kısıtlamaları, tebrik kartı metni...",
+          "add": "Ekle",
+          "yourNote": "Notunuz",
+          "recommended": "Sizin için önerilenler",
+          "cancel": "İptal",
+          "save": "Kaydet",
+          "addNotePlaceholder": "Örn: soğan olmasın, şuna alerjim var..."
+        },
+        "location": {
+          "title": "Yeni adres ekle",
+          "country": "Ülke",
+          "streetPlaceholder": "Sokak adı ve numara",
+          "continue": "Devam et",
+          "alertLocatingFailed": "Konumunuz alınamadı. Lütfen izinleri kontrol edin.",
+          "alertNotSupported": "Coğrafi konum tarayıcınız tarafından desteklenmiyor."
+        },
+        "search": {
+          "placeholder": "Wolt'ta ara",
+          "emptyPrompt": "Restoran, mağaza veya ürün ara",
+          "restaurantsAndStores": "Restoranlar ve mağazalar",
+          "relatedItems": "İlgili ürünler",
+          "seeAll": "Hepsini gör",
+          "noResults": "\"{query}\" için sonuç bulunamadı"
+        },
+        "userDropdown": {
+          "loggingOut": "Çıkış yapılıyor...",
+          "profile": "Profil",
+          "woltPlusActive": "Şu tarihe kadar aktif:",
+          "joinWoltPlus": "Wolt+'a katılın ve tasarruf edin",
+          "redeemCode": "Wolt+ kodu kullan",
+          "language": "Dil",
+          "contactSupport": "Destekle İletişime Geç",
+          "logout": "Çıkış yap"
+        },
+        "partnersDropdown": {
+          "title": "Ortaklar",
+          "forCouriers": "Kuryeler için",
+          "forMerchants": "Tüccarlar (Mağazalar) için",
+          "forCompanies": "Şirketler için",
+          "woltDrive": "Wolt Drive"
+        },
+        "theme": {
+          "title": "Tema",
+          "auto": "Otomatik",
+          "light": "Açık",
+          "dark": "Koyu",
+          "highContrast": "Yüksek Kontrast",
+          "done": "Bitti"
+        },
+        "review": {
+          "title": "Bu ürünü oyla",
+          "loginPrompt": "Yorum bırakmak için lütfen giriş yapın",
+          "login": "Giriş yap",
+          "howManyStars": "Kaç yıldız?",
+          "yourFeedback": "Geri bildiriminiz",
+          "feedbackPlaceholder": "Başkalarına neyi sevip sevmediğinizi söyleyin...",
+          "postReview": "Yorumu gönder",
+          "alertSuccess": "Yorum başarıyla gönderildi!",
+          "alertError": "Yorum gönderilirken bir hata oluştu. Lütfen tekrar giriş yapın."
+        },
+        "common": {
+          "sponsored": "Sponsorlu",
+          "noImage": "Görüntü yok",
+          "min": "dk"
+        }
+      }
+    }
+  },
+  "localIds": [
+    "features::local::components\\features\\features.content.ts"
+  ]
+} as const;
